@@ -21,3 +21,7 @@ Thumbs.db
 
 # App Settings & Local Credentials (Keep templates clean)
 discourse_playlists_backup.json
+
+.env
+.env.local
+app_settings.local.json

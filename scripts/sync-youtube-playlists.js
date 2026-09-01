@@ -4,7 +4,7 @@
 const fs = require('fs')
 const path = require('path')
 
-const apiKey = 'AIzaSyB9slh-YGOLz3AZWt-NhCUPQ19X60awStw'
+const apiKey = 'process.env.YOUTUBE_API_KEY || 'AIza_DEMO_KEY''
 const appDataDir = path.join(__dirname, '..')
 
 // 1. Update App Settings
