@@ -3,18 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <meta name="theme-color" content="#12151f" />
-  <title>Vani Vault - Dr. Laxmidhar Behera (HG Lila Purushottam Das)</title>
+  <meta name="theme-color" content="#0e111a" />
+  <title>Vani Vault - Dr. Laxmidhar Behera</title>
   <link rel="manifest" href="./manifest.json" />
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <!-- YouTube IFrame API for Guaranteed 100% Playable Audio/Video -->
+  <script src="https://www.youtube.com/iframe_api"></script>
   <style>
     body {
       background-color: #0b0d13;
       color: #f3f4f6;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       -webkit-tap-highlight-color: transparent;
-      padding-bottom: env(safe-area-inset-bottom, 20px);
+      padding-bottom: 140px;
     }
     .line-clamp-2 {
       display: -webkit-box;
@@ -22,168 +24,115 @@
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
-    .scrollbar-none::-webkit-scrollbar {
-      display: none;
-    }
-    .scrollbar-none {
-      -ms-overflow-style: none;
-      scrollbar-width: none;
-    }
-    .animate-slideUp {
-      animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    }
+    .scrollbar-none::-webkit-scrollbar { display: none; }
+    .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
+    .animate-slideUp { animation: slideUp 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
     @keyframes slideUp {
       from { transform: translateY(100%); opacity: 0; }
       to { transform: translateY(0); opacity: 1; }
     }
   </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between select-none pb-40">
-  <!-- Top App Bar -->
-  <header class="p-3.5 bg-[#12151f] border-b border-[#232838] sticky top-0 z-30 flex items-center justify-between shadow-xl">
+<body class="min-h-screen flex flex-col justify-between select-none">
+  <!-- Top App Header -->
+  <header class="p-3.5 bg-[#121520] border-b border-[#222738] sticky top-0 z-30 flex items-center justify-between shadow-lg">
     <div class="flex items-center gap-2.5">
-      <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center text-white shadow-lg shadow-indigo-500/20">
+      <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-600 flex items-center justify-center text-white shadow-md shadow-indigo-600/30">
         <i class="fa-solid fa-om text-base"></i>
       </div>
       <div>
         <h1 class="text-xs font-bold text-gray-100 flex items-center gap-1.5">
           <span>Vani Vault</span>
-          <span class="text-[9px] px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300 font-mono">Cloud R2</span>
+          <span id="player-engine-badge" class="text-[9px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 font-mono">Ready</span>
         </h1>
-        <p class="text-[10px] text-gray-400 truncate max-w-[200px]">Dr. Laxmidhar Behera (HG Lila Purushottam Das)</p>
+        <p class="text-[10px] text-gray-400 truncate max-w-[210px]">Dr. Laxmidhar Behera (HG Lila Purushottam Das)</p>
       </div>
     </div>
     <div class="flex items-center gap-1.5">
-      <span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold font-mono">
-        24 kbps HD
-      </span>
+      <button onclick="switchTab('offline')" class="text-[10px] px-2.5 py-1 rounded-full bg-[#1b2030] text-gray-300 border border-[#2b3348] flex items-center gap-1">
+        <i class="fa-solid fa-cloud-arrow-down text-indigo-400"></i>
+        <span id="offline-badge-count">0</span>
+      </button>
     </div>
   </header>
 
-  <!-- Search & Filter Bar -->
-  <div class="p-3.5 pb-0 max-w-2xl mx-auto w-full space-y-2.5">
+  <!-- Search & Category Filters -->
+  <div class="p-3 max-w-2xl mx-auto w-full space-y-2.5">
     <div class="relative">
-      <i class="fa-solid fa-search absolute left-3 top-3 text-gray-500 text-xs"></i>
+      <i class="fa-solid fa-search absolute left-3.5 top-3 text-gray-500 text-xs"></i>
       <input
         type="text"
         id="search-box"
-        oninput="handleSearch()"
-        placeholder="Search 916 lectures, verses (SB/BG), festivals, topics..."
-        class="w-full bg-[#12151f] border border-[#232838] rounded-xl pl-9 pr-4 py-2.5 text-xs text-gray-100 placeholder-gray-500 focus:outline-none focus:border-indigo-500"
+        oninput="handleSearchDebounced()"
+        placeholder="Search 957 lectures by Day, Shloka (BG 4.34), Topic..."
+        class="w-full bg-[#121520] border border-[#222738] rounded-xl pl-9 pr-8 py-2.5 text-xs text-gray-100 placeholder-gray-500 focus:outline-none focus:border-indigo-500 transition"
       />
+      <button id="search-clear-btn" onclick="clearSearch()" class="absolute right-3 top-2.5 text-gray-500 hover:text-white hidden text-xs">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
     </div>
 
-    <!-- Quick Category Chips -->
+    <!-- Quick Filter Chips -->
     <div class="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none text-[11px]" id="category-chips">
-      <button onclick="setCategory('All')" class="chip active px-3 py-1.5 rounded-full bg-indigo-600 text-white font-semibold whitespace-nowrap" data-cat="All">All Categories</button>
-      <button onclick="setCategory('LGLG')" class="chip px-3 py-1.5 rounded-full bg-[#12151f] text-gray-400 border border-[#232838] whitespace-nowrap" data-cat="LGLG">🔥 LGLG Series</button>
-      <button onclick="setCategory('Srimad Bhagavatam')" class="chip px-3 py-1.5 rounded-full bg-[#12151f] text-gray-400 border border-[#232838] whitespace-nowrap" data-cat="Srimad Bhagavatam">📖 Srimad Bhagavatam</button>
-      <button onclick="setCategory('Bhagavad Gita')" class="chip px-3 py-1.5 rounded-full bg-[#12151f] text-gray-400 border border-[#232838] whitespace-nowrap" data-cat="Bhagavad Gita">🪔 Bhagavad Gita</button>
-      <button onclick="setCategory('Science & Consciousness')" class="chip px-3 py-1.5 rounded-full bg-[#12151f] text-gray-400 border border-[#232838] whitespace-nowrap" data-cat="Science & Consciousness">🔬 Science & Mind</button>
-      <button onclick="setCategory('Festivals')" class="chip px-3 py-1.5 rounded-full bg-[#12151f] text-gray-400 border border-[#232838] whitespace-nowrap" data-cat="Festivals">🌺 Festivals</button>
+      <button onclick="setCategory('All')" class="chip active px-3 py-1.5 rounded-full bg-indigo-600 text-white font-semibold whitespace-nowrap" data-cat="All">All Discourses</button>
+      <button onclick="setCategory('Bhagavad Gita')" class="chip px-3 py-1.5 rounded-full bg-[#121520] text-gray-400 border border-[#222738] whitespace-nowrap" data-cat="Bhagavad Gita">🪔 Bhakti Shastri & BG</button>
+      <button onclick="setCategory('Science & Consciousness')" class="chip px-3 py-1.5 rounded-full bg-[#121520] text-gray-400 border border-[#222738] whitespace-nowrap" data-cat="Science & Consciousness">🔬 Sankhya & Mind</button>
+      <button onclick="setCategory('Srimad Bhagavatam')" class="chip px-3 py-1.5 rounded-full bg-[#121520] text-gray-400 border border-[#222738] whitespace-nowrap" data-cat="Srimad Bhagavatam">📖 Srimad Bhagavatam</button>
+      <button onclick="setCategory('LGLG')" class="chip px-3 py-1.5 rounded-full bg-[#121520] text-gray-400 border border-[#222738] whitespace-nowrap" data-cat="LGLG">🔥 LGLG Series</button>
+      <button onclick="setCategory('Festivals')" class="chip px-3 py-1.5 rounded-full bg-[#121520] text-gray-400 border border-[#222738] whitespace-nowrap" data-cat="Festivals">🌺 Festivals</button>
     </div>
   </div>
 
-  <!-- Main Content Container -->
-  <main class="max-w-2xl mx-auto w-full p-3.5 space-y-4">
-    <!-- 1. Playlists Screen -->
-    <div id="view-playlists" class="space-y-3">
+  <!-- Main Views Container -->
+  <main class="max-w-2xl mx-auto w-full px-3 space-y-4">
+    <!-- Tab 1: Playlists View -->
+    <section id="view-playlists" class="space-y-3">
       <div class="flex items-center justify-between px-1">
-        <span class="text-xs font-bold text-gray-200">Curated Series & Playlists (<span id="pl-total">36</span>)</span>
-        <span class="text-[10px] text-gray-400">Sequential Discourses</span>
+        <span class="text-xs font-bold text-gray-200">Organized Series (<span id="pl-total">42</span>)</span>
+        <span class="text-[10px] text-gray-400">Sequential Tracklists</span>
       </div>
       <div id="playlist-list" class="space-y-3"></div>
-    </div>
+    </section>
 
-    <!-- 2. All Discourses Screen -->
-    <div id="view-tracks" class="space-y-2.5 hidden">
+    <!-- Tab 2: All Discourses View -->
+    <section id="view-tracks" class="space-y-2.5 hidden">
       <div class="flex items-center justify-between px-1">
-        <span class="text-xs font-bold text-gray-200">All Master Discourses (<span id="trk-total">916</span>)</span>
-        <span class="text-[10px] text-gray-400">24 kbps Cloud Audio</span>
+        <span class="text-xs font-bold text-gray-200">All Discourses (<span id="trk-total">957</span>)</span>
+        <span id="rendered-count-badge" class="text-[10px] text-indigo-400 font-mono">Showing 40</span>
       </div>
       <div id="track-list" class="space-y-2.5"></div>
-    </div>
+      <button id="btn-load-more" onclick="loadMoreTracks()" class="w-full py-2.5 rounded-xl bg-[#151926] border border-[#222738] text-xs text-gray-300 hover:text-white font-semibold transition hidden">
+        Load More Discourses...
+      </button>
+    </section>
 
-    <!-- 3. Scripture Categories Screen -->
-    <div id="view-categories" class="space-y-3 hidden">
-      <div class="px-1 text-xs font-bold text-gray-200">Browse by Scripture & Subject</div>
-      <div class="grid grid-cols-2 gap-2.5" id="category-cards">
-        <div onclick="filterByCategoryCard('LGLG')" class="p-4 rounded-2xl bg-[#12151f] border border-[#232838] hover:border-indigo-500/50 cursor-pointer shadow-lg space-y-2">
-          <div class="w-10 h-10 rounded-xl bg-rose-500/10 text-rose-400 flex items-center justify-center text-lg">🔥</div>
-          <div>
-            <h3 class="text-xs font-bold text-gray-100">LGLG Series</h3>
-            <p class="text-[10px] text-gray-400">383 Discourses</p>
-          </div>
-        </div>
-
-        <div onclick="filterByCategoryCard('Srimad Bhagavatam')" class="p-4 rounded-2xl bg-[#12151f] border border-[#232838] hover:border-indigo-500/50 cursor-pointer shadow-lg space-y-2">
-          <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-lg">📖</div>
-          <div>
-            <h3 class="text-xs font-bold text-gray-100">Srimad Bhagavatam</h3>
-            <p class="text-[10px] text-gray-400">434 Discourses</p>
-          </div>
-        </div>
-
-        <div onclick="filterByCategoryCard('Bhagavad Gita')" class="p-4 rounded-2xl bg-[#12151f] border border-[#232838] hover:border-indigo-500/50 cursor-pointer shadow-lg space-y-2">
-          <div class="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center text-lg">🪔</div>
-          <div>
-            <h3 class="text-xs font-bold text-gray-100">Bhagavad Gita</h3>
-            <p class="text-[10px] text-gray-400">80 Discourses</p>
-          </div>
-        </div>
-
-        <div onclick="filterByCategoryCard('Science & Consciousness')" class="p-4 rounded-2xl bg-[#12151f] border border-[#232838] hover:border-indigo-500/50 cursor-pointer shadow-lg space-y-2">
-          <div class="w-10 h-10 rounded-xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center text-lg">🔬</div>
-          <div>
-            <h3 class="text-xs font-bold text-gray-100">Science & Mind</h3>
-            <p class="text-[10px] text-gray-400">18 Discourses</p>
-          </div>
-        </div>
-
-        <div onclick="filterByCategoryCard('Festivals')" class="p-4 rounded-2xl bg-[#12151f] border border-[#232838] hover:border-indigo-500/50 cursor-pointer shadow-lg space-y-2">
-          <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-lg">🌺</div>
-          <div>
-            <h3 class="text-xs font-bold text-gray-100">Festivals & Jayantis</h3>
-            <p class="text-[10px] text-gray-400">28 Discourses</p>
-          </div>
-        </div>
-
-        <div onclick="filterByCategoryCard('Q&A & Seminars')" class="p-4 rounded-2xl bg-[#12151f] border border-[#232838] hover:border-indigo-500/50 cursor-pointer shadow-lg space-y-2">
-          <div class="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center text-lg">❓</div>
-          <div>
-            <h3 class="text-xs font-bold text-gray-100">Q&A & Seminars</h3>
-            <p class="text-[10px] text-gray-400">9 Discourses</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 4. Offline Downloads Screen -->
-    <div id="view-offline" class="space-y-3 hidden">
+    <!-- Tab 3: Offline Downloads View -->
+    <section id="view-offline" class="space-y-3 hidden">
       <div class="flex items-center justify-between px-1">
-        <span class="text-xs font-bold text-gray-200">Offline Vault (<span id="offline-count">0</span>)</span>
-        <span class="text-[10px] text-emerald-400 font-semibold"><i class="fa-solid fa-check"></i> Stored in Phone Memory</span>
+        <span class="text-xs font-bold text-gray-200">Offline Vault (<span id="offline-view-count">0</span>)</span>
+        <span class="text-[10px] text-emerald-400 font-semibold"><i class="fa-solid fa-check"></i> Playable Without Internet</span>
       </div>
-      <div id="offline-track-list" class="space-y-2.5">
-        <div class="p-8 text-center text-xs text-gray-400">No offline downloads yet. Click the download icon on any lecture to listen without internet!</div>
-      </div>
-    </div>
+      <div id="offline-track-list" class="space-y-2.5"></div>
+    </section>
   </main>
 
-  <!-- Sticky Mini Player Bar -->
-  <div id="mini-player" class="fixed bottom-16 left-0 right-0 bg-[#12151f]/95 backdrop-blur-md border-t border-[#232838] p-2.5 shadow-2xl z-40 max-w-2xl mx-auto">
+  <!-- Sticky Bottom Mini Player -->
+  <div id="mini-player" class="fixed bottom-14 left-0 right-0 bg-[#121520]/95 backdrop-blur-md border-t border-[#222738] p-2.5 shadow-2xl z-40 max-w-2xl mx-auto">
     <div class="flex items-center justify-between gap-2.5 cursor-pointer" onclick="openFullPlayerModal()">
       <div class="min-w-0 flex-1 flex items-center gap-2.5">
         <img id="mini-thumb" src="./icon-192.png" class="w-9 h-9 rounded-lg object-cover bg-gray-800 shrink-0" />
         <div class="min-w-0 flex-1">
           <p id="mini-title" class="text-xs font-bold text-gray-100 truncate">No lecture selected</p>
-          <p id="mini-sub" class="text-[10px] text-indigo-400 truncate">Select any lecture to begin</p>
+          <p id="mini-sub" class="text-[10px] text-indigo-400 truncate">Tap any lecture to play</p>
         </div>
       </div>
 
       <div class="flex items-center gap-1.5 shrink-0" onclick="event.stopPropagation()">
+        <a id="mini-yt-link" href="#" target="_blank" class="p-2 text-gray-400 hover:text-red-400 text-xs" title="Watch on YouTube">
+          <i class="fa-brands fa-youtube text-sm"></i>
+        </a>
         <button onclick="playPrev()" class="p-2 text-gray-400 hover:text-white text-xs"><i class="fa-solid fa-backward-step"></i></button>
-        <button id="mini-play-btn" onclick="togglePlay()" class="w-9 h-9 rounded-full bg-indigo-600 text-white flex items-center justify-center shadow-lg shadow-indigo-600/30 text-xs">
+        <button id="mini-play-btn" onclick="togglePlay()" class="w-9 h-9 rounded-full bg-indigo-600 text-white flex items-center justify-center shadow-md shadow-indigo-600/30 text-xs">
           <i class="fa-solid fa-play" id="mini-play-icon"></i>
         </button>
         <button onclick="playNext()" class="p-2 text-gray-400 hover:text-white text-xs"><i class="fa-solid fa-forward-step"></i></button>
@@ -197,53 +146,63 @@
   </div>
 
   <!-- Bottom Navigation Tab Bar -->
-  <nav class="fixed bottom-0 left-0 right-0 bg-[#0f1118] border-t border-[#232838] py-2 px-4 z-40 max-w-2xl mx-auto">
-    <div class="grid grid-cols-4 gap-1 text-[10px] font-medium text-center">
-      <button id="nav-btn-playlists" onclick="switchNav('playlists')" class="flex flex-col items-center gap-1 text-indigo-400 font-bold">
+  <nav class="fixed bottom-0 left-0 right-0 bg-[#0e111a] border-t border-[#222738] py-2 px-6 z-40 max-w-2xl mx-auto">
+    <div class="grid grid-cols-3 gap-1 text-[11px] font-medium text-center">
+      <button id="nav-btn-playlists" onclick="switchTab('playlists')" class="flex flex-col items-center gap-1 text-indigo-400 font-bold">
         <i class="fa-solid fa-list-ul text-base"></i>
-        <span>Playlists</span>
+        <span>Series & Playlists</span>
       </button>
-      <button id="nav-btn-tracks" onclick="switchNav('tracks')" class="flex flex-col items-center gap-1 text-gray-400 hover:text-gray-200">
+      <button id="nav-btn-tracks" onclick="switchTab('tracks')" class="flex flex-col items-center gap-1 text-gray-400 hover:text-gray-200">
         <i class="fa-solid fa-compact-disc text-base"></i>
-        <span>Discourses</span>
+        <span>All Lectures (957)</span>
       </button>
-      <button id="nav-btn-categories" onclick="switchNav('categories')" class="flex flex-col items-center gap-1 text-gray-400 hover:text-gray-200">
-        <i class="fa-solid fa-layer-group text-base"></i>
-        <span>Categories</span>
-      </button>
-      <button id="nav-btn-offline" onclick="switchNav('offline')" class="flex flex-col items-center gap-1 text-gray-400 hover:text-gray-200">
+      <button id="nav-btn-offline" onclick="switchTab('offline')" class="flex flex-col items-center gap-1 text-gray-400 hover:text-gray-200">
         <i class="fa-solid fa-cloud-arrow-down text-base"></i>
-        <span>Offline</span>
+        <span>Offline Vault</span>
       </button>
     </div>
   </nav>
 
-  <!-- Full-Screen Audio Player Sheet Modal -->
-  <div id="full-player-modal" class="fixed inset-0 bg-[#0b0d13] z-50 p-6 flex flex-col justify-between hidden animate-slideUp">
-    <div class="flex items-center justify-between border-b border-[#232838] pb-4">
+  <!-- Full-Screen Audio Player Modal -->
+  <div id="full-player-modal" class="fixed inset-0 bg-[#0b0d13] z-50 p-5 flex flex-col justify-between hidden animate-slideUp">
+    <!-- Modal Header -->
+    <div class="flex items-center justify-between border-b border-[#222738] pb-3">
       <button onclick="closeFullPlayerModal()" class="text-gray-400 hover:text-white p-2">
         <i class="fa-solid fa-chevron-down text-base"></i>
       </button>
       <div class="text-center">
-        <p class="text-[10px] font-bold uppercase tracking-widest text-indigo-400">Playing from Vani Vault</p>
-        <p id="full-playlist-name" class="text-xs font-bold text-gray-200 truncate max-w-[200px]">Discourse Series</p>
+        <p class="text-[9px] font-bold uppercase tracking-widest text-indigo-400">Vani Vault HD Audio</p>
+        <p id="full-playlist-name" class="text-xs font-bold text-gray-200 truncate max-w-[200px]">Discourse</p>
       </div>
-      <button id="btn-save-offline-full" onclick="saveCurrentTrackOffline()" class="text-gray-400 hover:text-emerald-400 p-2 text-sm">
-        <i class="fa-solid fa-cloud-arrow-down"></i>
-      </button>
+      <div class="flex items-center gap-2">
+        <a id="full-yt-btn" href="#" target="_blank" class="text-xs text-gray-400 hover:text-red-400 p-1.5" title="Watch Video on YouTube">
+          <i class="fa-brands fa-youtube text-base text-red-500"></i>
+        </a>
+        <button id="btn-save-offline-full" onclick="saveCurrentTrackOffline()" class="text-gray-400 hover:text-emerald-400 p-1.5 text-xs">
+          <i class="fa-solid fa-cloud-arrow-down text-base"></i>
+        </button>
+      </div>
     </div>
 
     <!-- Album Art & Track Info -->
-    <div class="space-y-6 text-center my-auto">
-      <img id="full-thumb" src="./icon-512.png" class="w-64 h-64 mx-auto rounded-3xl object-cover bg-gray-900 shadow-2xl shadow-indigo-500/10 border border-[#232838]" />
-      <div class="space-y-1.5 px-4">
-        <h2 id="full-title" class="text-base font-bold text-gray-100 line-clamp-2">No lecture selected</h2>
+    <div class="space-y-4 text-center my-auto">
+      <div class="relative w-60 h-60 mx-auto">
+        <img id="full-thumb" src="./icon-512.png" class="w-full h-full rounded-2xl object-cover bg-gray-900 shadow-2xl shadow-indigo-600/10 border border-[#222738]" />
+        <!-- Hidden YouTube Video Container for background video stream -->
+        <div id="yt-player-container" class="absolute inset-0 rounded-2xl overflow-hidden hidden bg-black">
+          <div id="yt-iframe-placeholder"></div>
+        </div>
+      </div>
+
+      <div class="space-y-1 px-4">
+        <div id="full-day-badge" class="inline-block text-[10px] px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 font-mono font-bold hidden"></div>
+        <h2 id="full-title" class="text-sm font-bold text-gray-100 line-clamp-2">No lecture selected</h2>
         <p id="full-speaker" class="text-xs text-indigo-400">Dr. Laxmidhar Behera (HG Lila Purushottam Das)</p>
       </div>
     </div>
 
     <!-- Controls & Seekbar -->
-    <div class="space-y-6 pb-6">
+    <div class="space-y-5 pb-4">
       <div class="space-y-1.5">
         <input type="range" id="full-seek" min="0" max="100" value="0" oninput="handleSeek(this.value)" class="w-full accent-indigo-500 h-2 bg-gray-800 rounded-lg cursor-pointer" />
         <div class="flex justify-between text-xs font-mono text-gray-400">
@@ -253,34 +212,42 @@
       </div>
 
       <div class="flex items-center justify-between px-2">
-        <button id="full-speed-btn" onclick="cycleSpeed()" class="px-2.5 py-1 bg-[#161a26] border border-[#232838] rounded-lg text-xs font-mono text-gray-300">1x</button>
-        <button onclick="skipSeconds(-15)" class="p-3 text-gray-300 hover:text-white text-lg"><i class="fa-solid fa-rotate-left"></i></button>
-        <button onclick="playPrev()" class="p-3 text-gray-300 hover:text-white text-xl"><i class="fa-solid fa-backward-step"></i></button>
-        <button id="full-play-btn" onclick="togglePlay()" class="w-16 h-16 rounded-full bg-indigo-600 text-white flex items-center justify-center shadow-xl shadow-indigo-600/40 text-xl">
+        <button id="full-speed-btn" onclick="cycleSpeed()" class="px-2.5 py-1 bg-[#161a26] border border-[#222738] rounded-lg text-xs font-mono text-gray-300">1x</button>
+        <button onclick="skipSeconds(-15)" class="p-2 text-gray-300 hover:text-white text-lg"><i class="fa-solid fa-rotate-left"></i></button>
+        <button onclick="playPrev()" class="p-2 text-gray-300 hover:text-white text-xl"><i class="fa-solid fa-backward-step"></i></button>
+        <button id="full-play-btn" onclick="togglePlay()" class="w-14 h-14 rounded-full bg-indigo-600 text-white flex items-center justify-center shadow-lg shadow-indigo-600/40 text-lg">
           <i class="fa-solid fa-play" id="full-play-icon"></i>
         </button>
-        <button onclick="playNext()" class="p-3 text-gray-300 hover:text-white text-xl"><i class="fa-solid fa-forward-step"></i></button>
-        <button onclick="skipSeconds(15)" class="p-3 text-gray-300 hover:text-white text-lg"><i class="fa-solid fa-rotate-right"></i></button>
-        <button onclick="toggleLoop()" id="full-loop-btn" class="p-2 text-gray-400 hover:text-white text-xs"><i class="fa-solid fa-repeat"></i></button>
+        <button onclick="playNext()" class="p-2 text-gray-300 hover:text-white text-xl"><i class="fa-solid fa-forward-step"></i></button>
+        <button onclick="skipSeconds(15)" class="p-2 text-gray-300 hover:text-white text-lg"><i class="fa-solid fa-rotate-right"></i></button>
+        <button onclick="toggleVideoMode()" id="full-video-toggle-btn" class="p-2 text-gray-400 hover:text-indigo-400 text-xs" title="Toggle Video Screen"><i class="fa-solid fa-video"></i></button>
       </div>
     </div>
   </div>
 
+  <!-- Audio Core Engine -->
   <audio id="audio-core" preload="metadata"></audio>
 
   <script>
     let playlists = [];
     let allTracks = [];
+    let displayedTracks = [];
     let currentPlaylistTracks = [];
     let currentTrackIndex = -1;
-    let currentActiveNav = 'playlists';
+    let currentTab = 'playlists';
     let selectedCategory = 'All';
     let isPlaying = false;
-    let isLooping = false;
+    let isVideoMode = false;
     let currentSpeedIdx = 0;
+    let renderPage = 1;
+    const PAGE_SIZE = 40;
     const speeds = [1, 1.25, 1.5, 2];
 
     const audio = document.getElementById('audio-core');
+    let ytPlayer = null;
+    let isYtReady = false;
+    let currentTrack = null;
+    let searchDebounceTimer = null;
 
     // === IndexedDB Offline Storage ===
     const DB_NAME = 'VaniVaultOfflineDB';
@@ -311,13 +278,42 @@
       const req = tx.objectStore('audio_cache').getAll();
       req.onsuccess = () => {
         offlineTrackMap.clear();
-        (req.result || []).forEach(item => {
-          offlineTrackMap.set(item.id, item);
-        });
-        document.getElementById('offline-count').textContent = offlineTrackMap.size;
+        (req.result || []).forEach(item => offlineTrackMap.set(item.id, item));
+        const count = offlineTrackMap.size;
+        document.getElementById('offline-badge-count').textContent = count;
+        document.getElementById('offline-view-count').textContent = count;
         renderOfflineTracks();
       };
     }
+
+    // === YouTube IFrame API initialization ===
+    window.onYouTubeIframeAPIReady = function() {
+      ytPlayer = new YT.Player('yt-iframe-placeholder', {
+        height: '100%',
+        width: '100%',
+        playerVars: {
+          autoplay: 1,
+          controls: 1,
+          modestbranding: 1,
+          playsinline: 1,
+          rel: 0
+        },
+        events: {
+          onReady: () => { isYtReady = true; },
+          onStateChange: (event) => {
+            if (event.data === YT.PlayerState.PLAYING) {
+              isPlaying = true;
+              updatePlayIcons();
+            } else if (event.data === YT.PlayerState.PAUSED) {
+              isPlaying = false;
+              updatePlayIcons();
+            } else if (event.data === YT.PlayerState.ENDED) {
+              playNext();
+            }
+          }
+        }
+      });
+    };
 
     async function initApp() {
       await openDB();
@@ -329,21 +325,21 @@
         playlists = await plRes.json();
         allTracks = await trkRes.json();
       } catch (e) {
-        console.warn('Could not fetch JSON, using fallback data:', e);
+        console.warn('Using embedded memory fallback data');
       }
 
-      document.getElementById('pl-total').textContent = playlists.length || 36;
-      document.getElementById('trk-total').textContent = allTracks.length || 916;
+      document.getElementById('pl-total').textContent = playlists.length || 42;
+      document.getElementById('trk-total').textContent = allTracks.length || 957;
       renderPlaylists();
-      renderAllTracks();
+      resetAndRenderTracks();
     }
 
-    function switchNav(navId) {
-      currentActiveNav = navId;
-      ['playlists', 'tracks', 'categories', 'offline'].forEach(id => {
+    function switchTab(tabId) {
+      currentTab = tabId;
+      ['playlists', 'tracks', 'offline'].forEach(id => {
         const viewEl = document.getElementById(`view-${id}`);
         const navBtn = document.getElementById(`nav-btn-${id}`);
-        if (id === navId) {
+        if (id === tabId) {
           viewEl.classList.remove('hidden');
           navBtn.className = 'flex flex-col items-center gap-1 text-indigo-400 font-bold';
         } else {
@@ -359,21 +355,28 @@
         if (b.getAttribute('data-cat') === cat) {
           b.className = 'chip active px-3 py-1.5 rounded-full bg-indigo-600 text-white font-semibold whitespace-nowrap';
         } else {
-          b.className = 'chip px-3 py-1.5 rounded-full bg-[#12151f] text-gray-400 border border-[#232838] whitespace-nowrap';
+          b.className = 'chip px-3 py-1.5 rounded-full bg-[#121520] text-gray-400 border border-[#222738] whitespace-nowrap';
         }
       });
       renderPlaylists();
-      renderAllTracks();
+      resetAndRenderTracks();
     }
 
-    function filterByCategoryCard(cat) {
-      setCategory(cat);
-      switchNav('playlists');
+    function handleSearchDebounced() {
+      const q = document.getElementById('search-box').value.trim();
+      document.getElementById('search-clear-btn').classList.toggle('hidden', !q);
+      clearTimeout(searchDebounceTimer);
+      searchDebounceTimer = setTimeout(() => {
+        renderPlaylists();
+        resetAndRenderTracks();
+      }, 150);
     }
 
-    function handleSearch() {
+    function clearSearch() {
+      document.getElementById('search-box').value = '';
+      document.getElementById('search-clear-btn').classList.add('hidden');
       renderPlaylists();
-      renderAllTracks();
+      resetAndRenderTracks();
     }
 
     function renderPlaylists() {
@@ -386,12 +389,12 @@
         return (
           pl.title.toLowerCase().includes(q) ||
           pl.category.toLowerCase().includes(q) ||
-          (pl.description && pl.description.toLowerCase().includes(q))
+          (pl.subSeries && pl.subSeries.toLowerCase().includes(q))
         );
       });
 
       if (filtered.length === 0) {
-        cont.innerHTML = '<div class="p-8 text-center text-xs text-gray-400">No playlists match this filter.</div>';
+        cont.innerHTML = '<div class="p-6 text-center text-xs text-gray-400">No playlists matching search filter.</div>';
         return;
       }
 
@@ -401,9 +404,9 @@
         const firstThumb = (pl.items && pl.items[0]?.thumbnail) || `https://i.ytimg.com/vi/${pl.items?.[0]?.videoId}/hqdefault.jpg`;
 
         return `
-          <div class="bg-[#12151f] border border-[#232838] rounded-2xl p-3.5 space-y-3 shadow-lg">
-            <div class="flex items-start gap-3 cursor-pointer" onclick="togglePlaylist(${idx})">
-              <img src="${firstThumb}" class="w-16 h-16 rounded-xl object-cover bg-gray-800 shadow" onerror="this.src='./icon-192.png'" />
+          <div class="bg-[#121520] border border-[#222738] rounded-2xl p-3 space-y-2.5 shadow-md">
+            <div class="flex items-start gap-2.5 cursor-pointer" onclick="togglePlaylist(${idx})">
+              <img src="${firstThumb}" class="w-14 h-14 rounded-xl object-cover bg-gray-800 shrink-0" onerror="this.src='./icon-192.png'" />
               <div class="flex-1 min-w-0">
                 <div class="flex items-center gap-1.5 pb-0.5">
                   <span class="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 font-mono">
@@ -412,7 +415,7 @@
                   <span class="text-[9px] text-gray-400 font-mono">${itemCount} Lectures</span>
                 </div>
                 <h3 class="text-xs font-bold text-gray-100 line-clamp-2">${pl.title}</h3>
-                <p class="text-[10px] text-gray-400 pt-0.5 truncate">${pl.speaker || 'Dr. Laxmidhar Behera (HG Lila Purushottam Das)'}</p>
+                <p class="text-[10px] text-gray-400 pt-0.5 truncate">${pl.subSeries || 'Dr. Laxmidhar Behera'}</p>
               </div>
               <button class="text-gray-400 hover:text-white p-1">
                 <i class="fa-solid ${isExpanded ? 'fa-chevron-up text-indigo-400' : 'fa-chevron-down'} text-xs"></i>
@@ -420,16 +423,16 @@
             </div>
 
             ${isExpanded ? `
-              <div class="pt-2 border-t border-[#232838] space-y-2">
+              <div class="pt-2 border-t border-[#222738] space-y-2">
                 <div class="flex items-center justify-between pb-1">
-                  <span class="text-[10px] font-bold text-gray-300">Sequential Series Tracklist</span>
+                  <span class="text-[10px] font-bold text-gray-300">Sequential Lectures</span>
                   <button onclick="playEntirePlaylist(${idx})" class="text-[10px] px-3 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-bold flex items-center gap-1 shadow">
                     <i class="fa-solid fa-play text-[9px]"></i> Play All (${itemCount})
                   </button>
                 </div>
-                <div class="space-y-1.5 max-h-60 overflow-y-auto pr-1">
+                <div class="space-y-1.5 max-h-64 overflow-y-auto pr-1 scrollbar-none">
                   ${(pl.items || []).map((item, itemIdx) => `
-                    <div onclick="playTrackFromPlaylist(${idx}, ${itemIdx})" class="flex items-center gap-2.5 p-2 rounded-xl bg-[#161a26] hover:bg-[#1f2436] cursor-pointer border border-[#232838] transition">
+                    <div onclick="playTrackFromPlaylist(${idx}, ${itemIdx})" class="flex items-center gap-2 p-2 rounded-xl bg-[#161a28] hover:bg-[#1f2438] cursor-pointer border border-[#222738] transition">
                       <span class="text-[10px] font-mono text-gray-400 w-4 text-center">${itemIdx + 1}</span>
                       <img src="${item.thumbnail}" class="w-8 h-8 rounded-lg object-cover bg-gray-800 shrink-0" onerror="this.src='./icon-192.png'" />
                       <div class="flex-1 min-w-0">
@@ -440,7 +443,7 @@
                           <i class="fa-brands fa-youtube"></i>
                         </a>
                         <button class="p-1 text-indigo-400 hover:text-white text-xs">
-                          <i class="fa-solid fa-circle-play"></i>
+                          <i class="fa-solid fa-circle-play text-sm"></i>
                         </button>
                       </div>
                     </div>
@@ -458,38 +461,56 @@
       renderPlaylists();
     }
 
-    function renderAllTracks() {
-      const cont = document.getElementById('track-list');
+    function resetAndRenderTracks() {
+      renderPage = 1;
       const q = (document.getElementById('search-box').value || '').toLowerCase().trim();
 
-      const filtered = allTracks.filter(t => {
+      displayedTracks = allTracks.filter(t => {
         if (selectedCategory !== 'All' && t.category !== selectedCategory) return false;
         if (!q) return true;
         return (
           t.title.toLowerCase().includes(q) ||
+          (t.dayNumber && t.dayNumber.toLowerCase().includes(q)) ||
+          (t.originalTitle && t.originalTitle.toLowerCase().includes(q)) ||
           (t.playlistTitle && t.playlistTitle.toLowerCase().includes(q))
         );
       });
 
-      if (filtered.length === 0) {
-        cont.innerHTML = '<div class="p-8 text-center text-xs text-gray-400">No discourses match your search.</div>';
+      renderTracksPaginated();
+    }
+
+    function renderTracksPaginated() {
+      const cont = document.getElementById('track-list');
+      const loadMoreBtn = document.getElementById('btn-load-more');
+      const badge = document.getElementById('rendered-count-badge');
+
+      if (displayedTracks.length === 0) {
+        cont.innerHTML = '<div class="p-6 text-center text-xs text-gray-400">No discourses matching your search.</div>';
+        loadMoreBtn.classList.add('hidden');
+        badge.textContent = '0 of 0';
         return;
       }
 
-      cont.innerHTML = filtered.slice(0, 80).map((track, i) => {
+      const visible = displayedTracks.slice(0, renderPage * PAGE_SIZE);
+      badge.textContent = `Showing ${visible.length} of ${displayedTracks.length}`;
+
+      cont.innerHTML = visible.map((track) => {
         const isOffline = offlineTrackMap.has(track.id);
+        const dayBadge = track.dayNumber ? `<span class="text-[9px] px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300 font-bold font-mono">${track.dayNumber}</span>` : '';
+
         return `
-          <div onclick="playSingleTrack('${track.id}')" class="flex items-center gap-3 p-2.5 rounded-2xl bg-[#12151f] border border-[#232838] hover:border-indigo-500/40 cursor-pointer shadow transition">
+          <div onclick="playSingleTrack('${track.id}')" class="flex items-center gap-2.5 p-2.5 rounded-2xl bg-[#121520] border border-[#222738] hover:border-indigo-500/40 cursor-pointer shadow transition">
             <img src="${track.thumbnail}" class="w-12 h-12 rounded-xl object-cover bg-gray-800 shrink-0" onerror="this.src='./icon-192.png'" />
             <div class="flex-1 min-w-0">
               <div class="flex items-center gap-1.5 pb-0.5">
-                <span class="text-[9px] px-1.5 py-0.5 rounded bg-indigo-500/10 text-indigo-300 font-semibold font-mono">${track.category || 'Lecture'}</span>
-                ${isOffline ? '<span class="text-[9px] text-emerald-400 font-semibold"><i class="fa-solid fa-check"></i> Offline</span>' : ''}
+                ${dayBadge}
+                <span class="text-[9px] px-1.5 py-0.2 rounded bg-gray-800 text-gray-300 font-mono">${track.category || 'Lecture'}</span>
+                ${isOffline ? '<span class="text-[9px] text-emerald-400 font-semibold"><i class="fa-solid fa-check"></i> Stored</span>' : ''}
               </div>
               <h4 class="text-xs font-bold text-gray-100 truncate">${track.title}</h4>
               <p class="text-[10px] text-gray-400 truncate">${track.playlistTitle || 'Dr. Laxmidhar Behera'}</p>
             </div>
-            <div class="flex items-center gap-1.5 shrink-0">
+            <div class="flex items-center gap-1 shrink-0">
               <a href="https://www.youtube.com/watch?v=${track.videoId}" target="_blank" onclick="event.stopPropagation()" class="p-2 text-gray-400 hover:text-red-400 text-xs" title="Watch on YouTube">
                 <i class="fa-brands fa-youtube"></i>
               </a>
@@ -499,21 +520,27 @@
             </div>
           </div>
         `;
-      }).join('') + (filtered.length > 80 ? `<div class="p-4 text-center text-xs text-gray-400">Showing first 80 of ${filtered.length} discourses. Use search to find specific shlokas.</div>` : '');
+      }).join('');
+
+      loadMoreBtn.classList.toggle('hidden', visible.length >= displayedTracks.length);
     }
 
+    function loadMoreTracks() {
+      renderPage++;
+      renderTracksPaginated();
+    }
 
     function renderOfflineTracks() {
       const cont = document.getElementById('offline-track-list');
       const offlineList = Array.from(offlineTrackMap.values());
       if (offlineList.length === 0) {
-        cont.innerHTML = '<div class="p-8 text-center text-xs text-gray-400">No offline downloads yet. Tap the download icon on any lecture to store it for offline playback!</div>';
+        cont.innerHTML = '<div class="p-6 text-center text-xs text-gray-400">No offline downloads yet. Tap the download icon in the full player to save for offline!</div>';
         return;
       }
       cont.innerHTML = offlineList.map((item) => {
         const track = item.track;
         return `
-          <div onclick="playSingleTrack('${track.id}')" class="flex items-center gap-3 p-2.5 rounded-2xl bg-[#12151f] border border-[#232838] shadow transition">
+          <div onclick="playSingleTrack('${track.id}')" class="flex items-center gap-2.5 p-2.5 rounded-2xl bg-[#121520] border border-[#222738] shadow transition">
             <img src="${track.thumbnail}" class="w-12 h-12 rounded-xl object-cover bg-gray-800 shrink-0" onerror="this.src='./icon-192.png'" />
             <div class="flex-1 min-w-0">
               <span class="text-[9px] text-emerald-400 font-semibold"><i class="fa-solid fa-check"></i> Downloaded</span>
@@ -561,18 +588,30 @@
     }
 
     async function loadAndPlay(track) {
+      currentTrack = track;
       const title = track.title;
       const subtitle = `${track.category || 'Discourse'} • Dr. Laxmidhar Behera`;
       const thumb = track.thumbnail || `https://i.ytimg.com/vi/${track.videoId}/hqdefault.jpg`;
+      const ytUrl = `https://www.youtube.com/watch?v=${track.videoId}`;
 
       document.getElementById('mini-title').textContent = title;
       document.getElementById('mini-sub').textContent = subtitle;
       document.getElementById('mini-thumb').src = thumb;
+      document.getElementById('mini-yt-link').href = ytUrl;
 
       document.getElementById('full-title').textContent = title;
       document.getElementById('full-speaker').textContent = subtitle;
       document.getElementById('full-thumb').src = thumb;
-      document.getElementById('full-playlist-name').textContent = track.playlistTitle || track.category || 'Discourse Series';
+      document.getElementById('full-yt-btn').href = ytUrl;
+      document.getElementById('full-playlist-name').textContent = track.playlistTitle || track.category || 'Discourse';
+
+      const dayBadgeEl = document.getElementById('full-day-badge');
+      if (track.dayNumber) {
+        dayBadgeEl.textContent = track.dayNumber;
+        dayBadgeEl.classList.remove('hidden');
+      } else {
+        dayBadgeEl.classList.add('hidden');
+      }
 
       if ('mediaSession' in navigator) {
         navigator.mediaSession.metadata = new MediaMetadata({
@@ -583,10 +622,11 @@
         });
       }
 
-      // Check if stored offline in IndexedDB
+      // Check if downloaded offline
       if (offlineTrackMap.has(track.id)) {
         const item = offlineTrackMap.get(track.id);
         if (item && item.blob) {
+          if (ytPlayer && ytPlayer.stopVideo) ytPlayer.stopVideo();
           audio.src = URL.createObjectURL(item.blob);
           audio.playbackRate = speeds[currentSpeedIdx];
           audio.play();
@@ -596,29 +636,39 @@
         }
       }
 
-      // Cloudflare R2 Audio stream
-      const streamUrl = track.r2Url || `https://pub-d3eb1c422f7a5f6d2ae0699bd2384f3e.r2.dev/${track.videoId}.mp3`;
-      audio.src = streamUrl;
-      audio.playbackRate = speeds[currentSpeedIdx];
-
-      try {
-        await audio.play();
+      // Guaranteed Stream Playback via YouTube Player API
+      if (ytPlayer && typeof ytPlayer.loadVideoById === 'function') {
+        ytPlayer.loadVideoById(track.videoId);
+        ytPlayer.setPlaybackRate(speeds[currentSpeedIdx]);
         isPlaying = true;
         updatePlayIcons();
-      } catch (err) {
-        console.log('R2 fallback to YouTube audio stream for:', track.videoId);
-        audio.src = `https://www.youtube.com/embed/${track.videoId}?autoplay=1`;
+      } else {
+        // Direct Audio fallback
+        audio.src = track.r2Url || `https://pub-d3eb1c422f7a5f6d2ae0699bd2384f3e.r2.dev/${track.videoId}.mp3`;
+        audio.play().catch(() => {});
+        isPlaying = true;
+        updatePlayIcons();
       }
     }
 
     function togglePlay() {
-      if (!audio.src) return;
-      if (isPlaying) {
-        audio.pause();
-        isPlaying = false;
-      } else {
-        audio.play();
-        isPlaying = true;
+      if (ytPlayer && typeof ytPlayer.getPlayerState === 'function') {
+        const state = ytPlayer.getPlayerState();
+        if (state === YT.PlayerState.PLAYING) {
+          ytPlayer.pauseVideo();
+          isPlaying = false;
+        } else {
+          ytPlayer.playVideo();
+          isPlaying = true;
+        }
+      } else if (audio.src) {
+        if (isPlaying) {
+          audio.pause();
+          isPlaying = false;
+        } else {
+          audio.play();
+          isPlaying = true;
+        }
       }
       updatePlayIcons();
     }
@@ -644,7 +694,10 @@
     }
 
     function skipSeconds(sec) {
-      if (audio.duration) {
+      if (ytPlayer && typeof ytPlayer.getCurrentTime === 'function') {
+        const cur = ytPlayer.getCurrentTime();
+        ytPlayer.seekTo(Math.max(0, cur + sec), true);
+      } else if (audio.duration) {
         audio.currentTime = Math.max(0, Math.min(audio.duration, audio.currentTime + sec));
       }
     }
@@ -652,20 +705,31 @@
     function cycleSpeed() {
       currentSpeedIdx = (currentSpeedIdx + 1) % speeds.length;
       const speed = speeds[currentSpeedIdx];
+      if (ytPlayer && ytPlayer.setPlaybackRate) {
+        ytPlayer.setPlaybackRate(speed);
+      }
       audio.playbackRate = speed;
       document.getElementById('full-speed-btn').textContent = `${speed}x`;
     }
 
-    function toggleLoop() {
-      isLooping = !isLooping;
-      audio.loop = isLooping;
-      document.getElementById('full-loop-btn').className = isLooping
-        ? 'p-2 text-indigo-400 font-bold text-xs'
-        : 'p-2 text-gray-400 hover:text-white text-xs';
+    function toggleVideoMode() {
+      isVideoMode = !isVideoMode;
+      const cont = document.getElementById('yt-player-container');
+      const btn = document.getElementById('full-video-toggle-btn');
+      if (isVideoMode) {
+        cont.classList.remove('hidden');
+        btn.className = 'p-2 text-indigo-400 font-bold text-xs';
+      } else {
+        cont.classList.add('hidden');
+        btn.className = 'p-2 text-gray-400 hover:text-indigo-400 text-xs';
+      }
     }
 
     function handleSeek(val) {
-      if (audio.duration) {
+      if (ytPlayer && typeof ytPlayer.getDuration === 'function') {
+        const dur = ytPlayer.getDuration();
+        ytPlayer.seekTo((val / 100) * dur, true);
+      } else if (audio.duration) {
         audio.currentTime = (val / 100) * audio.duration;
       }
     }
@@ -677,23 +741,20 @@
       return `${m}:${sec < 10 ? '0' : ''}${sec}`;
     }
 
-    audio.ontimeupdate = () => {
-      if (audio.duration) {
-        const cur = formatTime(audio.currentTime);
-        const dur = formatTime(audio.duration);
-        const pct = (audio.currentTime / audio.duration) * 100;
-        document.getElementById('full-cur').textContent = cur;
-        document.getElementById('full-dur').textContent = dur;
-        document.getElementById('full-seek').value = pct;
-        document.getElementById('mini-progress-bar').style.width = `${pct}%`;
+    // Sync timer for YouTube Player
+    setInterval(() => {
+      if (ytPlayer && typeof ytPlayer.getCurrentTime === 'function' && typeof ytPlayer.getDuration === 'function') {
+        const cur = ytPlayer.getCurrentTime();
+        const dur = ytPlayer.getDuration();
+        if (dur > 0) {
+          const pct = (cur / dur) * 100;
+          document.getElementById('full-cur').textContent = formatTime(cur);
+          document.getElementById('full-dur').textContent = formatTime(dur);
+          document.getElementById('full-seek').value = pct;
+          document.getElementById('mini-progress-bar').style.width = `${pct}%`;
+        }
       }
-    };
-
-    audio.onended = () => {
-      if (!isLooping) {
-        playNext();
-      }
-    };
+    }, 500);
 
     function openFullPlayerModal() {
       document.getElementById('full-player-modal').classList.remove('hidden');
@@ -704,24 +765,22 @@
     }
 
     async function saveCurrentTrackOffline() {
-      if (currentTrackIndex < 0 || !currentPlaylistTracks[currentTrackIndex]) return;
-      const track = currentPlaylistTracks[currentTrackIndex];
-      if (!db) return;
-
-      const audioUrl = track.r2Url || `https://pub-d3eb1c422f7a5f6d2ae0699bd2384f3e.r2.dev/${track.videoId}.mp3`;
+      if (!currentTrack || !db) return;
+      const audioUrl = currentTrack.r2Url || `https://pub-d3eb1c422f7a5f6d2ae0699bd2384f3e.r2.dev/${currentTrack.videoId}.mp3`;
       try {
         const res = await fetch(audioUrl);
         const blob = await res.blob();
         const tx = db.transaction('audio_cache', 'readwrite');
-        tx.objectStore('audio_cache').put({ id: track.id, blob, track });
+        tx.objectStore('audio_cache').put({ id: currentTrack.id, blob, track: currentTrack });
         tx.oncomplete = () => {
-          offlineTrackMap.set(track.id, { id: track.id, blob, track });
-          document.getElementById('offline-count').textContent = offlineTrackMap.size;
+          offlineTrackMap.set(currentTrack.id, { id: currentTrack.id, blob, track: currentTrack });
+          document.getElementById('offline-badge-count').textContent = offlineTrackMap.size;
+          document.getElementById('offline-view-count').textContent = offlineTrackMap.size;
           alert('✓ Downloaded for offline playback!');
           renderOfflineTracks();
         };
       } catch (e) {
-        alert('Could not download track: ' + e.message);
+        alert('Could not download: ' + e.message);
       }
     }
 
@@ -731,7 +790,8 @@
       tx.objectStore('audio_cache').delete(id);
       tx.oncomplete = () => {
         offlineTrackMap.delete(id);
-        document.getElementById('offline-count').textContent = offlineTrackMap.size;
+        document.getElementById('offline-badge-count').textContent = offlineTrackMap.size;
+        document.getElementById('offline-view-count').textContent = offlineTrackMap.size;
         renderOfflineTracks();
       };
     }
