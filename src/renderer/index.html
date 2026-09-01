@@ -1,0 +1,19 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Vani Studio Pro</title>
+    <link rel="icon" type="image/png" href="/src/assets/logo.png" />
+    <!-- Content Security Policy allowing media protocol and image thumbnails -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: blob:; media-src 'self' media: data: blob: https:; connect-src 'self' media: data: blob: https:;"
+    />
+
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

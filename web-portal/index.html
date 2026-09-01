@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#4f46e5" />
+  <title>Vani Vault - Dr. Behera Sir's Sacred Discourses</title>
+  <link rel="manifest" href="./manifest.json" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    body {
+      background-color: #0f1117;
+      color: #f3f4f6;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between pb-32 select-none">
+  <!-- Header -->
+  <header class="p-4 bg-[#161922] border-b border-[#2b3144] sticky top-0 z-30 flex items-center justify-between shadow-lg">
+    <div class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow">
+        <i class="fa-solid fa-om text-lg"></i>
+      </div>
+      <div>
+        <h1 class="text-sm font-bold text-gray-100">Vani Vault</h1>
+        <p class="text-[11px] text-gray-400">Dr. B. K. Behera Sir</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-2">
+      <button id="btn-offline-mode" onclick="toggleOfflineView()" class="text-[10px] px-2.5 py-1 rounded-full bg-[#0f1117] text-gray-400 border border-[#2b3144] hover:text-emerald-400 transition flex items-center gap-1">
+        <i class="fa-solid fa-cloud-arrow-down text-xs"></i>
+        <span id="offline-status-text">Offline Vault</span>
+      </button>
+      <span class="text-[10px] px-2.5 py-1 rounded-full bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 font-semibold">
+        24 kbps HD
+      </span>
+    </div>
+  </header>
+
+  <!-- Search & Category Filters -->
+  <main class="max-w-2xl mx-auto w-full p-4 space-y-4">
+    <div class="relative">
+      <i class="fa-solid fa-search absolute left-3 top-3.5 text-gray-500 text-xs"></i>
+      <input
+        type="text"
+        id="search-box"
+        placeholder="Search verse, festival, topic, title..."
+        class="w-full bg-[#161922] border border-[#2b3144] rounded-xl pl-9 pr-4 py-2.5 text-xs text-gray-100 placeholder-gray-500 focus:outline-none focus:border-indigo-500"
+      />
+    </div>
+
+    <!-- Category Chips -->
+    <div class="flex gap-2 overflow-x-auto pb-1 scrollbar-none text-xs" id="category-chips">
+      <button onclick="setCategory('All')" class="chip active px-3 py-1.5 rounded-full bg-indigo-600 text-white font-semibold whitespace-nowrap" data-cat="All">All Discourses</button>
+      <button onclick="setCategory('Srimad Bhagavatam')" class="chip px-3 py-1.5 rounded-full bg-[#161922] text-gray-400 border border-[#2b3144] whitespace-nowrap" data-cat="Srimad Bhagavatam">📖 Srimad Bhagavatam</button>
+      <button onclick="setCategory('Bhagavad Gita')" class="chip px-3 py-1.5 rounded-full bg-[#161922] text-gray-400 border border-[#2b3144] whitespace-nowrap" data-cat="Bhagavad Gita">🪔 Bhagavad Gita</button>
+      <button onclick="setCategory('Chaitanya Charitamrita')" class="chip px-3 py-1.5 rounded-full bg-[#161922] text-gray-400 border border-[#2b3144] whitespace-nowrap" data-cat="Chaitanya Charitamrita">✨ Caitanya Caritamrta</button>
+      <button onclick="setCategory('Festivals')" class="chip px-3 py-1.5 rounded-full bg-[#161922] text-gray-400 border border-[#2b3144] whitespace-nowrap" data-cat="Festivals">🌺 Festivals</button>
+    </div>
+
+    <!-- Discourses List -->
+    <div class="space-y-2.5" id="track-list">
+      <div class="p-8 text-center text-xs text-gray-400">Loading sacred discourses from Cloudflare R2...</div>
+    </div>
+  </main>
+
+  <!-- Sticky Bottom Continuous Player -->
+  <footer class="fixed bottom-0 left-0 right-0 bg-[#161922] border-t border-[#2b3144] p-3.5 shadow-2xl z-40">
+    <div class="max-w-2xl mx-auto space-y-2.5">
+      <div class="flex items-center justify-between gap-3">
+        <div class="min-w-0 flex-1">
+          <p id="player-title" class="text-xs font-bold text-gray-100 truncate">No discourse selected</p>
+          <p id="player-speaker" class="text-[11px] text-indigo-400 truncate">Select a lecture to play</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <!-- Speed Control -->
+          <button id="btn-speed" onclick="cycleSpeed()" class="px-2 py-1 bg-[#0f1117] border border-[#2b3144] rounded text-[10px] font-mono text-gray-300 hover:text-white">1x</button>
+          <!-- Skip -15s -->
+          <button onclick="skipSeconds(-15)" class="p-2 text-gray-400 hover:text-white text-xs" title="Rewind 15s"><i class="fa-solid fa-rotate-left"></i></button>
+          <button id="btn-prev" class="p-2 text-gray-400 hover:text-white"><i class="fa-solid fa-backward-step"></i></button>
+          <button id="btn-play" class="w-10 h-10 rounded-full bg-indigo-600 text-white flex items-center justify-center shadow-lg"><i class="fa-solid fa-play"></i></button>
+          <button id="btn-next" class="p-2 text-gray-400 hover:text-white"><i class="fa-solid fa-forward-step"></i></button>
+          <!-- Skip +15s -->
+          <button onclick="skipSeconds(15)" class="p-2 text-gray-400 hover:text-white text-xs" title="Forward 15s"><i class="fa-solid fa-rotate-right"></i></button>
+        </div>
+      </div>
+
+      <!-- Time & Progress Bar -->
+      <div class="flex items-center gap-2 text-[10px] text-gray-400 font-mono">
+        <span id="player-current">0:00</span>
+        <input type="range" id="player-seek" min="0" max="100" value="0" class="flex-1 accent-indigo-500 h-1.5 bg-gray-700 rounded cursor-pointer" />
+        <span id="player-duration">0:00</span>
+      </div>
+    </div>
+  </footer>
+
+  <audio id="audio-core" preload="metadata"></audio>
+
+  <script>
+    let tracks = [];
+    let offlineTracks = new Set();
+    let currentIndex = -1;
+    let selectedCategory = 'All';
+    let showOnlyOffline = false;
+    let playbackSpeedIndex = 0;
+    const speeds = [1, 1.25, 1.5, 2];
+
+    const audio = document.getElementById('audio-core');
+    const playBtn = document.getElementById('btn-play');
+    const titleEl = document.getElementById('player-title');
+    const speakerEl = document.getElementById('player-speaker');
+    const curEl = document.getElementById('player-current');
+    const durEl = document.getElementById('player-duration');
+    const seekEl = document.getElementById('player-seek');
+    const listEl = document.getElementById('track-list');
+    const searchBox = document.getElementById('search-box');
+    const speedBtn = document.getElementById('btn-speed');
+
+    // === IndexedDB Offline Storage ===
+    const DB_NAME = 'VaniVaultOfflineDB';
+    const DB_VERSION = 1;
+    let db = null;
+
+    function openDB() {
+      return new Promise((resolve) => {
+        const req = indexedDB.open(DB_NAME, DB_VERSION);
+        req.onupgradeneeded = (e) => {
+          const database = e.target.result;
+          if (!database.objectStoreNames.contains('audio_files')) {
+            database.createObjectStore('audio_files', { keyPath: 'id' });
+          }
+        };
+        req.onsuccess = (e) => {
+          db = e.target.result;
+          loadOfflineList();
+          resolve(db);
+        };
+        req.onerror = () => resolve(null);
+      });
+    }
+
+    async function loadOfflineList() {
+      if (!db) return;
+      const tx = db.transaction('audio_files', 'readonly');
+      const store = tx.objectStore('audio_files');
+      const req = store.getAllKeys();
+      req.onsuccess = () => {
+        offlineTracks = new Set(req.result);
+        filterAndRender();
+      };
+    }
+
+    async function saveOffline(trackId, e) {
+      if (e) e.stopPropagation();
+      const track = tracks.find(t => t.id === trackId);
+      if (!track || !db) return;
+
+      const audioUrl = track.r2Url || track.filePath || `./audio/${track.fileName}`;
+      try {
+        const res = await fetch(audioUrl);
+        const blob = await res.blob();
+        const tx = db.transaction('audio_files', 'readwrite');
+        const store = tx.objectStore('audio_files');
+        store.put({ id: track.id, blob, track });
+        tx.oncomplete = () => {
+          offlineTracks.add(track.id);
+          filterAndRender();
+        };
+      } catch (err) {
+        alert('Could not download for offline: ' + err.message);
+      }
+    }
+
+    async function deleteOffline(trackId, e) {
+      if (e) e.stopPropagation();
+      if (!db) return;
+      const tx = db.transaction('audio_files', 'readwrite');
+      tx.objectStore('audio_files').delete(trackId);
+      tx.oncomplete = () => {
+        offlineTracks.delete(trackId);
+        filterAndRender();
+      };
+    }
+
+    function toggleOfflineView() {
+      showOnlyOffline = !showOnlyOffline;
+      document.getElementById('btn-offline-mode').className = showOnlyOffline
+        ? 'text-[10px] px-2.5 py-1 rounded-full bg-emerald-600 text-white border border-emerald-500 flex items-center gap-1 font-semibold'
+        : 'text-[10px] px-2.5 py-1 rounded-full bg-[#0f1117] text-gray-400 border border-[#2b3144] hover:text-emerald-400 transition flex items-center gap-1';
+      filterAndRender();
+    }
+
+    function formatTime(s) {
+      if (!s || isNaN(s)) return '0:00';
+      const m = Math.floor(s / 60);
+      const sec = Math.floor(s % 60);
+      return `${m}:${sec < 10 ? '0' : ''}${sec}`;
+    }
+
+    async function init() {
+      await openDB();
+      try {
+        const res = await fetch('./behera_repo.json');
+        tracks = await res.json();
+        filterAndRender();
+      } catch (e) {
+        listEl.innerHTML = '<div class="p-8 text-center text-xs text-gray-400">Audio Vault connected. Syncing with Cloudflare R2 bucket.</div>';
+      }
+    }
+
+    function setCategory(cat) {
+      selectedCategory = cat;
+      document.querySelectorAll('#category-chips button').forEach(b => {
+        if (b.getAttribute('data-cat') === cat) {
+          b.className = 'chip active px-3 py-1.5 rounded-full bg-indigo-600 text-white font-semibold whitespace-nowrap';
+        } else {
+          b.className = 'chip px-3 py-1.5 rounded-full bg-[#161922] text-gray-400 border border-[#2b3144] whitespace-nowrap';
+        }
+      });
+      filterAndRender();
+    }
+
+    function filterAndRender() {
+      const q = (searchBox.value || '').toLowerCase().trim();
+      const filtered = tracks.filter(t => {
+        if (showOnlyOffline && !offlineTracks.has(t.id)) return false;
+
+        const meta = t.metadata || {};
+        if (selectedCategory !== 'All') {
+          const scr = (meta.scripture || t.category || '').toLowerCase();
+          const fest = (meta.festival || '').toLowerCase();
+          if (selectedCategory === 'Srimad Bhagavatam' && !scr.includes('bhagavatam')) return false;
+          if (selectedCategory === 'Bhagavad Gita' && !scr.includes('gita')) return false;
+          if (selectedCategory === 'Chaitanya Charitamrita' && !scr.includes('chaitanya')) return false;
+          if (selectedCategory === 'Festivals' && !meta.festival && !fest.includes('jayanti')) return false;
+        }
+
+        if (!q) return true;
+        return (
+          t.title.toLowerCase().includes(q) ||
+          t.speaker.toLowerCase().includes(q) ||
+          (meta.verse && meta.verse.toLowerCase().includes(q)) ||
+          (meta.festival && meta.festival.toLowerCase().includes(q)) ||
+          (meta.philosophyTopic && meta.philosophyTopic.toLowerCase().includes(q)) ||
+          (meta.description && meta.description.toLowerCase().includes(q))
+        );
+      });
+
+      renderTracks(filtered);
+    }
+
+    searchBox.addEventListener('input', filterAndRender);
+
+    function renderTracks(items) {
+      if (!items || items.length === 0) {
+        listEl.innerHTML = '<div class="p-8 text-center text-xs text-gray-400">No discourses found matching your search.</div>';
+        return;
+      }
+      listEl.innerHTML = items.map((t) => {
+        const isOffline = offlineTracks.has(t.id);
+        const actualIndex = tracks.findIndex(x => x.id === t.id);
+        const isSelected = currentIndex === actualIndex;
+
+        return `
+          <div onclick="playTrack(${actualIndex})" class="p-3.5 bg-[#161922] border ${isSelected ? 'border-indigo-500 bg-[#1e2333]' : 'border-[#2b3144]'} rounded-xl flex items-center justify-between gap-3 cursor-pointer hover:border-indigo-500/50 transition">
+            <div class="min-w-0 flex-1 space-y-1">
+              <p class="text-xs font-bold text-gray-100 truncate">${t.title}</p>
+              <div class="flex items-center gap-2 text-[10px] text-gray-400 flex-wrap">
+                <span class="text-indigo-300 font-mono">${t.speaker || 'Dr. B. K. Behera'}</span>
+                ${t.metadata?.verse ? `<span class="px-1.5 py-0.2 rounded bg-amber-500/10 text-amber-300 border border-amber-500/20 font-mono">${t.metadata.verse}</span>` : ''}
+                ${isOffline ? `<span class="px-1.5 py-0.2 rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 font-semibold flex items-center gap-1"><i class="fa-solid fa-check text-[8px]"></i> Offline</span>` : ''}
+                ${t.fileSize ? `<span>${(t.fileSize / 1024 / 1024).toFixed(1)} MB</span>` : ''}
+              </div>
+            </div>
+            <div class="flex items-center gap-1.5 shrink-0">
+              ${isOffline ? `
+                <button onclick="deleteOffline('${t.id}', event)" class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-400 hover:bg-rose-500/20 hover:text-rose-400 flex items-center justify-center text-xs transition" title="Downloaded Offline. Click to remove.">
+                  <i class="fa-solid fa-circle-check"></i>
+                </button>
+              ` : `
+                <button onclick="saveOffline('${t.id}', event)" class="w-8 h-8 rounded-lg bg-[#0f1117] border border-[#2b3144] text-gray-400 hover:text-indigo-400 flex items-center justify-center text-xs transition" title="Download for Offline Road Trips">
+                  <i class="fa-solid fa-arrow-down"></i>
+                </button>
+              `}
+              <button class="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center text-xs shadow">
+                <i class="fa-solid ${isSelected && !audio.paused ? 'fa-pause' : 'fa-play'}"></i>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function playTrack(idx) {
+      if (idx < 0 || idx >= tracks.length) return;
+      currentIndex = idx;
+      const t = tracks[idx];
+      titleEl.innerText = t.title;
+      speakerEl.innerText = `${t.speaker || 'Dr. B. K. Behera'} • ${t.metadata?.verse || t.folderPath || 'Discourse'}`;
+
+      // Check if available in Offline IndexedDB first
+      let playSrc = t.r2Url || t.filePath || `./audio/${t.fileName}`;
+      if (db && offlineTracks.has(t.id)) {
+        const tx = db.transaction('audio_files', 'readonly');
+        const req = tx.objectStore('audio_files').get(t.id);
+        req.onsuccess = () => {
+          if (req.result && req.result.blob) {
+            playSrc = URL.createObjectURL(req.result.blob);
+            audio.src = playSrc;
+            audio.play();
+          } else {
+            audio.src = playSrc;
+            audio.play();
+          }
+        };
+      } else {
+        audio.src = playSrc;
+        audio.play();
+      }
+
+      playBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
+      updateMediaSession(t);
+      filterAndRender();
+    }
+
+    function updateMediaSession(track) {
+      if ('mediaSession' in navigator) {
+        navigator.mediaSession.metadata = new MediaMetadata({
+          title: track.title,
+          artist: track.speaker || 'Dr. B. K. Behera Sir',
+          album: track.metadata?.scripture || track.folderPath || 'Vani Vault',
+          artwork: [
+            { src: './icon-512.png', sizes: '512x512', type: 'image/png' }
+          ]
+        });
+
+        navigator.mediaSession.setActionHandler('play', () => { audio.play(); playBtn.innerHTML = '<i class="fa-solid fa-pause"></i>'; });
+        navigator.mediaSession.setActionHandler('pause', () => { audio.pause(); playBtn.innerHTML = '<i class="fa-solid fa-play"></i>'; });
+        navigator.mediaSession.setActionHandler('previoustrack', () => playTrack((currentIndex - 1 + tracks.length) % tracks.length));
+        navigator.mediaSession.setActionHandler('nexttrack', () => playTrack((currentIndex + 1) % tracks.length));
+        navigator.mediaSession.setActionHandler('seekforward', () => skipSeconds(15));
+        navigator.mediaSession.setActionHandler('seekbackward', () => skipSeconds(-15));
+      }
+    }
+
+    function cycleSpeed() {
+      playbackSpeedIndex = (playbackSpeedIndex + 1) % speeds.length;
+      const speed = speeds[playbackSpeedIndex];
+      audio.playbackRate = speed;
+      speedBtn.innerText = `${speed}x`;
+    }
+
+    function skipSeconds(sec) {
+      if (audio.duration) {
+        audio.currentTime = Math.max(0, Math.min(audio.duration, audio.currentTime + sec));
+      }
+    }
+
+    playBtn.addEventListener('click', () => {
+      if (audio.paused) {
+        audio.play();
+        playBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
+      } else {
+        audio.pause();
+        playBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
+      }
+      filterAndRender();
+    });
+
+    audio.addEventListener('timeupdate', () => {
+      curEl.innerText = formatTime(audio.currentTime);
+      durEl.innerText = formatTime(audio.duration);
+      if (audio.duration) {
+        seekEl.value = (audio.currentTime / audio.duration) * 100;
+      }
+    });
+
+    seekEl.addEventListener('input', (e) => {
+      if (audio.duration) {
+        audio.currentTime = (e.target.value / 100) * audio.duration;
+      }
+    });
+
+    audio.addEventListener('ended', () => {
+      playTrack((currentIndex + 1) % tracks.length);
+    });
+
+    document.getElementById('btn-next').addEventListener('click', () => playTrack((currentIndex + 1) % tracks.length));
+    document.getElementById('btn-prev').addEventListener('click', () => playTrack((currentIndex - 1 + tracks.length) % tracks.length));
+
+    // Register Service Worker for PWA
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js').catch(console.warn);
+    }
+
+    init();
+  </script>
+</body>
+</html>

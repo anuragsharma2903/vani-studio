@@ -1,0 +1,23 @@
+# Dependencies
+node_modules
+.pnp
+.pnp.js
+
+# Build Outputs
+dist
+out
+android/app/build
+android/.gradle
+android/build
+
+# Temporary Audio Downloads & Caches
+temp_audio/
+*.tmp
+*.log
+*.log*
+.eslintcache
+.DS_Store
+Thumbs.db
+
+# App Settings & Local Credentials (Keep templates clean)
+discourse_playlists_backup.json
