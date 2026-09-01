@@ -8,7 +8,6 @@
   <link rel="manifest" href="./manifest.json" />
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-  <!-- YouTube IFrame API for Guaranteed 100% Playable Audio/Video -->
   <script src="https://www.youtube.com/iframe_api"></script>
   <style>
     body {
@@ -16,7 +15,7 @@
       color: #f3f4f6;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       -webkit-tap-highlight-color: transparent;
-      padding-bottom: 140px;
+      padding-bottom: 150px;
     }
     .line-clamp-2 {
       display: -webkit-box;
@@ -45,19 +44,19 @@
           <span>Vani Vault</span>
           <span id="player-engine-badge" class="text-[9px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 font-mono">Ready</span>
         </h1>
-        <p class="text-[10px] text-gray-400 truncate max-w-[210px]">Dr. Laxmidhar Behera (HG Lila Purushottam Das)</p>
+        <p class="text-[10px] text-gray-400 truncate max-w-[200px]">Dr. Laxmidhar Behera (HG Lila Purushottam Das)</p>
       </div>
     </div>
-    <div class="flex items-center gap-1.5">
-      <button onclick="switchTab('offline')" class="text-[10px] px-2.5 py-1 rounded-full bg-[#1b2030] text-gray-300 border border-[#2b3348] flex items-center gap-1">
-        <i class="fa-solid fa-cloud-arrow-down text-indigo-400"></i>
-        <span id="offline-badge-count">0</span>
+    <div class="flex items-center gap-2">
+      <button onclick="switchTab('dashboard')" class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#181d2c] border border-[#2b3348] text-[11px] text-gray-200 hover:border-indigo-500 transition">
+        <div class="w-4 h-4 rounded-full bg-indigo-600 flex items-center justify-center text-[9px] text-white font-bold" id="header-avatar">D</div>
+        <span id="header-user-name" class="font-medium text-xs truncate max-w-[80px]">Devotee</span>
       </button>
     </div>
   </header>
 
   <!-- Search & Category Filters -->
-  <div class="p-3 max-w-2xl mx-auto w-full space-y-2.5">
+  <div id="search-section" class="p-3 max-w-2xl mx-auto w-full space-y-2.5">
     <div class="relative">
       <i class="fa-solid fa-search absolute left-3.5 top-3 text-gray-500 text-xs"></i>
       <input
@@ -85,7 +84,90 @@
 
   <!-- Main Views Container -->
   <main class="max-w-2xl mx-auto w-full px-3 space-y-4">
-    <!-- Tab 1: Playlists View -->
+    
+    <!-- ================= TAB 1: USER DASHBOARD ================= -->
+    <section id="view-dashboard" class="space-y-4 hidden">
+      <!-- Profile Card -->
+      <div class="p-4 rounded-2xl bg-gradient-to-br from-[#161a28] to-[#111420] border border-[#262c3e] shadow-xl space-y-3">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div id="dashboard-avatar" class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-indigo-600 to-pink-600 flex items-center justify-center text-white text-lg font-bold shadow-lg shadow-indigo-600/30">
+              D
+            </div>
+            <div>
+              <h2 id="dash-user-name" class="text-sm font-bold text-gray-100 flex items-center gap-1.5">
+                <span>Devotee</span>
+                <span class="text-[9px] px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300 font-mono">Practitioner</span>
+              </h2>
+              <p id="dash-user-status" class="text-[11px] text-gray-400">Listening to Dr. Laxmidhar Behera Sir's Katha</p>
+            </div>
+          </div>
+          <button onclick="openEditProfileModal()" class="p-2 rounded-xl bg-[#1b2030] text-gray-300 hover:text-white border border-[#2a3246] text-xs">
+            <i class="fa-solid fa-pen-to-square"></i>
+          </button>
+        </div>
+
+        <!-- Listening Stats Badges -->
+        <div class="grid grid-cols-3 gap-2 pt-2 border-t border-[#232838] text-center">
+          <div class="p-2 rounded-xl bg-[#121520] border border-[#222738]">
+            <p id="stat-listened-count" class="text-xs font-bold text-indigo-400 font-mono">0</p>
+            <p class="text-[9px] text-gray-400">Lectures Played</p>
+          </div>
+          <div class="p-2 rounded-xl bg-[#121520] border border-[#222738]">
+            <p id="stat-notes-count" class="text-xs font-bold text-amber-400 font-mono">0</p>
+            <p class="text-[9px] text-gray-400">Study Notes</p>
+          </div>
+          <div class="p-2 rounded-xl bg-[#121520] border border-[#222738]">
+            <p id="stat-favs-count" class="text-xs font-bold text-rose-400 font-mono">0</p>
+            <p class="text-[9px] text-gray-400">Favorites</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Continue Listening / Recent History -->
+      <div class="space-y-2">
+        <div class="flex items-center justify-between px-1">
+          <h3 class="text-xs font-bold text-gray-200 flex items-center gap-1.5">
+            <i class="fa-solid fa-clock-rotate-left text-indigo-400"></i>
+            <span>Continue Listening</span>
+          </h3>
+          <button onclick="clearHistory()" class="text-[10px] text-gray-500 hover:text-rose-400">Clear</button>
+        </div>
+        <div id="continue-listening-list" class="space-y-2">
+          <div class="p-4 text-center text-xs text-gray-500 bg-[#121520] rounded-xl border border-[#222738]">No recent listens yet. Start playing any discourse!</div>
+        </div>
+      </div>
+
+      <!-- Personal Study Notes & Bookmarks -->
+      <div class="space-y-2">
+        <div class="flex items-center justify-between px-1">
+          <h3 class="text-xs font-bold text-gray-200 flex items-center gap-1.5">
+            <i class="fa-solid fa-book-bookmark text-amber-400"></i>
+            <span>My Study Notes & Insights</span>
+          </h3>
+          <button onclick="exportNotes()" class="text-[10px] text-indigo-400 hover:text-indigo-300 font-semibold"><i class="fa-solid fa-file-arrow-down"></i> Export</button>
+        </div>
+        <div id="notes-container" class="space-y-2">
+          <div class="p-4 text-center text-xs text-gray-500 bg-[#121520] rounded-xl border border-[#222738]">No notes taken yet. While listening, click "📝 Take Notes" to save insights!</div>
+        </div>
+      </div>
+
+      <!-- Custom Playlists Section -->
+      <div class="space-y-2">
+        <div class="flex items-center justify-between px-1">
+          <h3 class="text-xs font-bold text-gray-200 flex items-center gap-1.5">
+            <i class="fa-solid fa-folder-plus text-emerald-400"></i>
+            <span>My Custom Playlists</span>
+          </h3>
+          <button onclick="promptCreatePlaylist()" class="text-[10px] px-2.5 py-1 rounded-lg bg-indigo-600 text-white font-bold flex items-center gap-1 shadow">
+            <i class="fa-solid fa-plus text-[9px]"></i> New Playlist
+          </button>
+        </div>
+        <div id="user-custom-playlists" class="space-y-2"></div>
+      </div>
+    </section>
+
+    <!-- ================= TAB 2: PLAYLISTS VIEW ================= -->
     <section id="view-playlists" class="space-y-3">
       <div class="flex items-center justify-between px-1">
         <span class="text-xs font-bold text-gray-200">Organized Series (<span id="pl-total">42</span>)</span>
@@ -94,7 +176,7 @@
       <div id="playlist-list" class="space-y-3"></div>
     </section>
 
-    <!-- Tab 2: All Discourses View -->
+    <!-- ================= TAB 3: ALL DISCOURSES VIEW ================= -->
     <section id="view-tracks" class="space-y-2.5 hidden">
       <div class="flex items-center justify-between px-1">
         <span class="text-xs font-bold text-gray-200">All Discourses (<span id="trk-total">957</span>)</span>
@@ -106,7 +188,7 @@
       </button>
     </section>
 
-    <!-- Tab 3: Offline Downloads View -->
+    <!-- ================= TAB 4: OFFLINE VAULT VIEW ================= -->
     <section id="view-offline" class="space-y-3 hidden">
       <div class="flex items-center justify-between px-1">
         <span class="text-xs font-bold text-gray-200">Offline Vault (<span id="offline-view-count">0</span>)</span>
@@ -128,6 +210,9 @@
       </div>
 
       <div class="flex items-center gap-1.5 shrink-0" onclick="event.stopPropagation()">
+        <button id="mini-fav-btn" onclick="toggleFavoriteCurrent()" class="p-2 text-gray-400 hover:text-rose-400 text-xs">
+          <i class="fa-regular fa-heart" id="mini-fav-icon"></i>
+        </button>
         <a id="mini-yt-link" href="#" target="_blank" class="p-2 text-gray-400 hover:text-red-400 text-xs" title="Watch on YouTube">
           <i class="fa-brands fa-youtube text-sm"></i>
         </a>
@@ -145,20 +230,24 @@
     </div>
   </div>
 
-  <!-- Bottom Navigation Tab Bar -->
-  <nav class="fixed bottom-0 left-0 right-0 bg-[#0e111a] border-t border-[#222738] py-2 px-6 z-40 max-w-2xl mx-auto">
-    <div class="grid grid-cols-3 gap-1 text-[11px] font-medium text-center">
+  <!-- Bottom Navigation Tab Bar (4 Tabs) -->
+  <nav class="fixed bottom-0 left-0 right-0 bg-[#0e111a] border-t border-[#222738] py-2 px-4 z-40 max-w-2xl mx-auto">
+    <div class="grid grid-cols-4 gap-1 text-[10px] font-medium text-center">
       <button id="nav-btn-playlists" onclick="switchTab('playlists')" class="flex flex-col items-center gap-1 text-indigo-400 font-bold">
         <i class="fa-solid fa-list-ul text-base"></i>
-        <span>Series & Playlists</span>
+        <span>Series</span>
       </button>
       <button id="nav-btn-tracks" onclick="switchTab('tracks')" class="flex flex-col items-center gap-1 text-gray-400 hover:text-gray-200">
         <i class="fa-solid fa-compact-disc text-base"></i>
-        <span>All Lectures (957)</span>
+        <span>Lectures</span>
       </button>
       <button id="nav-btn-offline" onclick="switchTab('offline')" class="flex flex-col items-center gap-1 text-gray-400 hover:text-gray-200">
         <i class="fa-solid fa-cloud-arrow-down text-base"></i>
-        <span>Offline Vault</span>
+        <span>Offline</span>
+      </button>
+      <button id="nav-btn-dashboard" onclick="switchTab('dashboard')" class="flex flex-col items-center gap-1 text-gray-400 hover:text-gray-200">
+        <i class="fa-solid fa-user-astronaut text-base"></i>
+        <span>Dashboard</span>
       </button>
     </div>
   </nav>
@@ -172,9 +261,12 @@
       </button>
       <div class="text-center">
         <p class="text-[9px] font-bold uppercase tracking-widest text-indigo-400">Vani Vault HD Audio</p>
-        <p id="full-playlist-name" class="text-xs font-bold text-gray-200 truncate max-w-[200px]">Discourse</p>
+        <p id="full-playlist-name" class="text-xs font-bold text-gray-200 truncate max-w-[180px]">Discourse</p>
       </div>
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-1.5">
+        <button onclick="openNoteModalForCurrent()" class="text-gray-400 hover:text-amber-400 p-1.5 text-xs" title="Take Study Notes">
+          <i class="fa-solid fa-pen-nib text-base"></i>
+        </button>
         <a id="full-yt-btn" href="#" target="_blank" class="text-xs text-gray-400 hover:text-red-400 p-1.5" title="Watch Video on YouTube">
           <i class="fa-brands fa-youtube text-base text-red-500"></i>
         </a>
@@ -185,10 +277,9 @@
     </div>
 
     <!-- Album Art & Track Info -->
-    <div class="space-y-4 text-center my-auto">
-      <div class="relative w-60 h-60 mx-auto">
+    <div class="space-y-3 text-center my-auto">
+      <div class="relative w-56 h-56 mx-auto">
         <img id="full-thumb" src="./icon-512.png" class="w-full h-full rounded-2xl object-cover bg-gray-900 shadow-2xl shadow-indigo-600/10 border border-[#222738]" />
-        <!-- Hidden YouTube Video Container for background video stream -->
         <div id="yt-player-container" class="absolute inset-0 rounded-2xl overflow-hidden hidden bg-black">
           <div id="yt-iframe-placeholder"></div>
         </div>
@@ -202,7 +293,7 @@
     </div>
 
     <!-- Controls & Seekbar -->
-    <div class="space-y-5 pb-4">
+    <div class="space-y-4 pb-3">
       <div class="space-y-1.5">
         <input type="range" id="full-seek" min="0" max="100" value="0" oninput="handleSeek(this.value)" class="w-full accent-indigo-500 h-2 bg-gray-800 rounded-lg cursor-pointer" />
         <div class="flex justify-between text-xs font-mono text-gray-400">
@@ -211,7 +302,7 @@
         </div>
       </div>
 
-      <div class="flex items-center justify-between px-2">
+      <div class="flex items-center justify-between px-1">
         <button id="full-speed-btn" onclick="cycleSpeed()" class="px-2.5 py-1 bg-[#161a26] border border-[#222738] rounded-lg text-xs font-mono text-gray-300">1x</button>
         <button onclick="skipSeconds(-15)" class="p-2 text-gray-300 hover:text-white text-lg"><i class="fa-solid fa-rotate-left"></i></button>
         <button onclick="playPrev()" class="p-2 text-gray-300 hover:text-white text-xl"><i class="fa-solid fa-backward-step"></i></button>
@@ -225,7 +316,51 @@
     </div>
   </div>
 
-  <!-- Audio Core Engine -->
+  <!-- Study Note Modal Dialog -->
+  <div id="note-modal" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-[#141824] border border-[#2a3248] rounded-2xl max-w-md w-full p-4 space-y-3 shadow-2xl animate-slideUp">
+      <div class="flex items-center justify-between border-b border-[#232838] pb-2">
+        <h3 class="text-xs font-bold text-gray-100 flex items-center gap-1.5">
+          <i class="fa-solid fa-pen-nib text-amber-400"></i>
+          <span>Study Note & Insights</span>
+        </h3>
+        <button onclick="closeNoteModal()" class="text-gray-400 hover:text-white text-xs p-1"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="space-y-2">
+        <p id="note-lecture-title" class="text-[11px] font-semibold text-indigo-300 truncate">Lecture Title</p>
+        <textarea id="note-text-input" rows="4" placeholder="Write your reflections, shloka meanings, key philosophical points..." class="w-full bg-[#0d1017] border border-[#232838] rounded-xl p-2.5 text-xs text-gray-100 placeholder-gray-500 focus:outline-none focus:border-indigo-500"></textarea>
+      </div>
+      <div class="flex justify-end gap-2 pt-1">
+        <button onclick="closeNoteModal()" class="px-3 py-1.5 rounded-lg bg-[#1c2232] text-xs text-gray-300">Cancel</button>
+        <button onclick="saveNote()" class="px-4 py-1.5 rounded-lg bg-indigo-600 text-xs text-white font-bold shadow">Save Note</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Profile Modal Dialog -->
+  <div id="profile-modal" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-[#141824] border border-[#2a3248] rounded-2xl max-w-sm w-full p-4 space-y-3 shadow-2xl animate-slideUp">
+      <div class="flex items-center justify-between border-b border-[#232838] pb-2">
+        <h3 class="text-xs font-bold text-gray-100">Edit Devotee Profile</h3>
+        <button onclick="closeEditProfileModal()" class="text-gray-400 hover:text-white text-xs p-1"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="space-y-2.5 text-xs">
+        <div>
+          <label class="text-[10px] text-gray-400 block pb-1">Name / Spiritual Name</label>
+          <input id="input-profile-name" type="text" placeholder="e.g. Krishna Dasa" class="w-full bg-[#0d1017] border border-[#232838] rounded-xl p-2 text-xs text-gray-100" />
+        </div>
+        <div>
+          <label class="text-[10px] text-gray-400 block pb-1">Status / Focus</label>
+          <input id="input-profile-status" type="text" placeholder="e.g. Srimad Bhagavatam & BG Student" class="w-full bg-[#0d1017] border border-[#232838] rounded-xl p-2 text-xs text-gray-100" />
+        </div>
+      </div>
+      <div class="flex justify-end gap-2 pt-2">
+        <button onclick="closeEditProfileModal()" class="px-3 py-1.5 rounded-lg bg-[#1c2232] text-xs text-gray-300">Cancel</button>
+        <button onclick="saveProfile()" class="px-4 py-1.5 rounded-lg bg-indigo-600 text-xs text-white font-bold shadow">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
   <audio id="audio-core" preload="metadata"></audio>
 
   <script>
@@ -245,9 +380,19 @@
 
     const audio = document.getElementById('audio-core');
     let ytPlayer = null;
-    let isYtReady = false;
     let currentTrack = null;
     let searchDebounceTimer = null;
+
+    // === Persistent User Data Models ===
+    let userProfile = {
+      name: 'Devotee',
+      status: 'Listening to Dr. Laxmidhar Behera Sir',
+      avatarInitial: 'D'
+    };
+    let listeningHistory = [];
+    let studyNotes = [];
+    let favoriteTrackIds = new Set();
+    let customPlaylists = [];
 
     // === IndexedDB Offline Storage ===
     const DB_NAME = 'VaniVaultOfflineDB';
@@ -280,26 +425,57 @@
         offlineTrackMap.clear();
         (req.result || []).forEach(item => offlineTrackMap.set(item.id, item));
         const count = offlineTrackMap.size;
-        document.getElementById('offline-badge-count').textContent = count;
         document.getElementById('offline-view-count').textContent = count;
         renderOfflineTracks();
       };
     }
 
-    // === YouTube IFrame API initialization ===
+    // === LocalStorage User Persistence ===
+    function loadUserData() {
+      try {
+        const p = localStorage.getItem('vv_profile');
+        if (p) userProfile = JSON.parse(p);
+        const h = localStorage.getItem('vv_history');
+        if (h) listeningHistory = JSON.parse(h);
+        const n = localStorage.getItem('vv_notes');
+        if (n) studyNotes = JSON.parse(n);
+        const f = localStorage.getItem('vv_favorites');
+        if (f) favoriteTrackIds = new Set(JSON.parse(f));
+        const c = localStorage.getItem('vv_custom_pl');
+        if (c) customPlaylists = JSON.parse(c);
+      } catch (e) {}
+
+      updateProfileUI();
+      renderDashboard();
+    }
+
+    function updateProfileUI() {
+      const initial = (userProfile.name || 'D').charAt(0).toUpperCase();
+      document.getElementById('header-avatar').textContent = initial;
+      document.getElementById('dashboard-avatar').textContent = initial;
+      document.getElementById('header-user-name').textContent = userProfile.name;
+      document.getElementById('dash-user-name').innerHTML = `<span>${userProfile.name}</span> <span class="text-[9px] px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300 font-mono">Practitioner</span>`;
+      document.getElementById('dash-user-status').textContent = userProfile.status;
+    }
+
+    function saveUserData() {
+      try {
+        localStorage.setItem('vv_profile', JSON.stringify(userProfile));
+        localStorage.setItem('vv_history', JSON.stringify(listeningHistory));
+        localStorage.setItem('vv_notes', JSON.stringify(studyNotes));
+        localStorage.setItem('vv_favorites', JSON.stringify(Array.from(favoriteTrackIds)));
+        localStorage.setItem('vv_custom_pl', JSON.stringify(customPlaylists));
+      } catch (e) {}
+      renderDashboard();
+    }
+
+    // === YouTube IFrame API ===
     window.onYouTubeIframeAPIReady = function() {
       ytPlayer = new YT.Player('yt-iframe-placeholder', {
         height: '100%',
         width: '100%',
-        playerVars: {
-          autoplay: 1,
-          controls: 1,
-          modestbranding: 1,
-          playsinline: 1,
-          rel: 0
-        },
+        playerVars: { autoplay: 1, controls: 1, modestbranding: 1, playsinline: 1, rel: 0 },
         events: {
-          onReady: () => { isYtReady = true; },
           onStateChange: (event) => {
             if (event.data === YT.PlayerState.PLAYING) {
               isPlaying = true;
@@ -317,6 +493,7 @@
 
     async function initApp() {
       await openDB();
+      loadUserData();
       try {
         const [plRes, trkRes] = await Promise.all([
           fetch('./discourse_playlists.json'),
@@ -325,7 +502,7 @@
         playlists = await plRes.json();
         allTracks = await trkRes.json();
       } catch (e) {
-        console.warn('Using embedded memory fallback data');
+        console.warn('Using embedded memory fallback');
       }
 
       document.getElementById('pl-total').textContent = playlists.length || 42;
@@ -336,17 +513,26 @@
 
     function switchTab(tabId) {
       currentTab = tabId;
-      ['playlists', 'tracks', 'offline'].forEach(id => {
+      const searchSec = document.getElementById('search-section');
+      if (tabId === 'dashboard') {
+        searchSec.classList.add('hidden');
+      } else {
+        searchSec.classList.remove('hidden');
+      }
+
+      ['playlists', 'tracks', 'offline', 'dashboard'].forEach(id => {
         const viewEl = document.getElementById(`view-${id}`);
         const navBtn = document.getElementById(`nav-btn-${id}`);
         if (id === tabId) {
           viewEl.classList.remove('hidden');
-          navBtn.className = 'flex flex-col items-center gap-1 text-indigo-400 font-bold';
+          if (navBtn) navBtn.className = 'flex flex-col items-center gap-1 text-indigo-400 font-bold';
         } else {
           viewEl.classList.add('hidden');
-          navBtn.className = 'flex flex-col items-center gap-1 text-gray-400 hover:text-gray-200';
+          if (navBtn) navBtn.className = 'flex flex-col items-center gap-1 text-gray-400 hover:text-gray-200';
         }
       });
+
+      if (tabId === 'dashboard') renderDashboard();
     }
 
     function setCategory(cat) {
@@ -394,7 +580,7 @@
       });
 
       if (filtered.length === 0) {
-        cont.innerHTML = '<div class="p-6 text-center text-xs text-gray-400">No playlists matching search filter.</div>';
+        cont.innerHTML = '<div class="p-6 text-center text-xs text-gray-400">No playlists matching filter.</div>';
         return;
       }
 
@@ -485,7 +671,7 @@
       const badge = document.getElementById('rendered-count-badge');
 
       if (displayedTracks.length === 0) {
-        cont.innerHTML = '<div class="p-6 text-center text-xs text-gray-400">No discourses matching your search.</div>';
+        cont.innerHTML = '<div class="p-6 text-center text-xs text-gray-400">No discourses matching search.</div>';
         loadMoreBtn.classList.add('hidden');
         badge.textContent = '0 of 0';
         return;
@@ -496,6 +682,7 @@
 
       cont.innerHTML = visible.map((track) => {
         const isOffline = offlineTrackMap.has(track.id);
+        const isFav = favoriteTrackIds.has(track.id);
         const dayBadge = track.dayNumber ? `<span class="text-[9px] px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300 font-bold font-mono">${track.dayNumber}</span>` : '';
 
         return `
@@ -511,6 +698,9 @@
               <p class="text-[10px] text-gray-400 truncate">${track.playlistTitle || 'Dr. Laxmidhar Behera'}</p>
             </div>
             <div class="flex items-center gap-1 shrink-0">
+              <button onclick="event.stopPropagation(); toggleFavorite('${track.id}')" class="p-2 text-xs ${isFav ? 'text-rose-500' : 'text-gray-500 hover:text-rose-400'}">
+                <i class="${isFav ? 'fa-solid' : 'fa-regular'} fa-heart"></i>
+              </button>
               <a href="https://www.youtube.com/watch?v=${track.videoId}" target="_blank" onclick="event.stopPropagation()" class="p-2 text-gray-400 hover:text-red-400 text-xs" title="Watch on YouTube">
                 <i class="fa-brands fa-youtube"></i>
               </a>
@@ -534,7 +724,7 @@
       const cont = document.getElementById('offline-track-list');
       const offlineList = Array.from(offlineTrackMap.values());
       if (offlineList.length === 0) {
-        cont.innerHTML = '<div class="p-6 text-center text-xs text-gray-400">No offline downloads yet. Tap the download icon in the full player to save for offline!</div>';
+        cont.innerHTML = '<div class="p-6 text-center text-xs text-gray-400">No offline downloads yet. Tap download icon in player to save for offline!</div>';
         return;
       }
       cont.innerHTML = offlineList.map((item) => {
@@ -553,6 +743,78 @@
           </div>
         `;
       }).join('');
+    }
+
+    // === Dashboard Rendering ===
+    function renderDashboard() {
+      document.getElementById('stat-listened-count').textContent = listeningHistory.length;
+      document.getElementById('stat-notes-count').textContent = studyNotes.length;
+      document.getElementById('stat-favs-count').textContent = favoriteTrackIds.size;
+
+      // Render Continue Listening
+      const contHistory = document.getElementById('continue-listening-list');
+      if (listeningHistory.length === 0) {
+        contHistory.innerHTML = '<div class="p-4 text-center text-xs text-gray-500 bg-[#121520] rounded-xl border border-[#222738]">No recent listens yet.</div>';
+      } else {
+        contHistory.innerHTML = listeningHistory.slice(0, 5).map((item) => {
+          return `
+            <div onclick="playSingleTrack('${item.trackId}')" class="flex items-center gap-2.5 p-2.5 rounded-xl bg-[#121520] border border-[#222738] hover:border-indigo-500/40 cursor-pointer shadow">
+              <img src="${item.thumbnail}" class="w-10 h-10 rounded-lg object-cover bg-gray-800 shrink-0" />
+              <div class="flex-1 min-w-0">
+                <h4 class="text-xs font-bold text-gray-100 truncate">${item.title}</h4>
+                <div class="flex items-center gap-2 text-[10px] text-gray-400 font-mono">
+                  <span>${formatTime(item.currentTime || 0)} / ${formatTime(item.duration || 0)}</span>
+                  <span>•</span>
+                  <span class="text-indigo-400">${item.datePlayed || 'Recent'}</span>
+                </div>
+              </div>
+              <button class="w-7 h-7 rounded-full bg-indigo-600 text-white flex items-center justify-center text-[10px]">
+                <i class="fa-solid fa-play"></i>
+              </button>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // Render Notes
+      const notesCont = document.getElementById('notes-container');
+      if (studyNotes.length === 0) {
+        notesCont.innerHTML = '<div class="p-4 text-center text-xs text-gray-500 bg-[#121520] rounded-xl border border-[#222738]">No study notes taken yet. While listening, click "📝 Take Notes"!</div>';
+      } else {
+        notesCont.innerHTML = studyNotes.slice(0, 6).map((n, idx) => {
+          return `
+            <div class="p-3 rounded-xl bg-[#121520] border border-[#222738] space-y-1.5 shadow">
+              <div class="flex items-center justify-between">
+                <h4 class="text-xs font-bold text-indigo-300 truncate max-w-[240px]">${n.lectureTitle}</h4>
+                <button onclick="deleteNote(${idx})" class="text-gray-500 hover:text-rose-400 text-xs p-1"><i class="fa-solid fa-trash-can"></i></button>
+              </div>
+              <p class="text-xs text-gray-200 leading-relaxed">${n.text}</p>
+              <p class="text-[9px] text-gray-500 font-mono">${n.timestamp} • ${n.date}</p>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // Render Custom Playlists
+      const plCont = document.getElementById('user-custom-playlists');
+      if (customPlaylists.length === 0) {
+        plCont.innerHTML = '<div class="p-4 text-center text-xs text-gray-500 bg-[#121520] rounded-xl border border-[#222738]">No custom playlists yet. Tap "New Playlist" to create your own collection!</div>';
+      } else {
+        plCont.innerHTML = customPlaylists.map((pl, idx) => {
+          return `
+            <div class="p-3 rounded-xl bg-[#121520] border border-[#222738] flex items-center justify-between shadow">
+              <div>
+                <h4 class="text-xs font-bold text-gray-100">${pl.name}</h4>
+                <p class="text-[10px] text-gray-400">${(pl.trackIds || []).length} Lectures</p>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <button onclick="playCustomPlaylist(${idx})" class="px-2.5 py-1 rounded bg-indigo-600 text-white text-xs font-bold"><i class="fa-solid fa-play"></i></button>
+                <button onclick="deleteCustomPlaylist(${idx})" class="p-1.5 text-gray-500 hover:text-rose-400 text-xs"><i class="fa-solid fa-trash-can"></i></button>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
     }
 
     function playSingleTrack(id) {
@@ -613,6 +875,22 @@
         dayBadgeEl.classList.add('hidden');
       }
 
+      // Add to Continue Listening History
+      const existingIdx = listeningHistory.findIndex(h => h.trackId === track.id);
+      const historyItem = {
+        trackId: track.id,
+        videoId: track.videoId,
+        title: track.title,
+        thumbnail: thumb,
+        datePlayed: new Date().toLocaleDateString(),
+        currentTime: 0,
+        duration: 0
+      };
+      if (existingIdx >= 0) listeningHistory.splice(existingIdx, 1);
+      listeningHistory.unshift(historyItem);
+      if (listeningHistory.length > 20) listeningHistory.pop();
+      saveUserData();
+
       if ('mediaSession' in navigator) {
         navigator.mediaSession.metadata = new MediaMetadata({
           title: track.title,
@@ -636,14 +914,13 @@
         }
       }
 
-      // Guaranteed Stream Playback via YouTube Player API
+      // Play via YouTube Player
       if (ytPlayer && typeof ytPlayer.loadVideoById === 'function') {
         ytPlayer.loadVideoById(track.videoId);
         ytPlayer.setPlaybackRate(speeds[currentSpeedIdx]);
         isPlaying = true;
         updatePlayIcons();
       } else {
-        // Direct Audio fallback
         audio.src = track.r2Url || `https://pub-d3eb1c422f7a5f6d2ae0699bd2384f3e.r2.dev/${track.videoId}.mp3`;
         audio.play().catch(() => {});
         isPlaying = true;
@@ -705,9 +982,7 @@
     function cycleSpeed() {
       currentSpeedIdx = (currentSpeedIdx + 1) % speeds.length;
       const speed = speeds[currentSpeedIdx];
-      if (ytPlayer && ytPlayer.setPlaybackRate) {
-        ytPlayer.setPlaybackRate(speed);
-      }
+      if (ytPlayer && ytPlayer.setPlaybackRate) ytPlayer.setPlaybackRate(speed);
       audio.playbackRate = speed;
       document.getElementById('full-speed-btn').textContent = `${speed}x`;
     }
@@ -741,20 +1016,32 @@
       return `${m}:${sec < 10 ? '0' : ''}${sec}`;
     }
 
-    // Sync timer for YouTube Player
+    // Sync timer
     setInterval(() => {
+      let cur = 0;
+      let dur = 0;
       if (ytPlayer && typeof ytPlayer.getCurrentTime === 'function' && typeof ytPlayer.getDuration === 'function') {
-        const cur = ytPlayer.getCurrentTime();
-        const dur = ytPlayer.getDuration();
-        if (dur > 0) {
-          const pct = (cur / dur) * 100;
-          document.getElementById('full-cur').textContent = formatTime(cur);
-          document.getElementById('full-dur').textContent = formatTime(dur);
-          document.getElementById('full-seek').value = pct;
-          document.getElementById('mini-progress-bar').style.width = `${pct}%`;
+        cur = ytPlayer.getCurrentTime();
+        dur = ytPlayer.getDuration();
+      } else if (audio.duration) {
+        cur = audio.currentTime;
+        dur = audio.duration;
+      }
+
+      if (dur > 0) {
+        const pct = (cur / dur) * 100;
+        document.getElementById('full-cur').textContent = formatTime(cur);
+        document.getElementById('full-dur').textContent = formatTime(dur);
+        document.getElementById('full-seek').value = pct;
+        document.getElementById('mini-progress-bar').style.width = `${pct}%`;
+
+        // Update active history item progress
+        if (currentTrack && listeningHistory.length > 0 && listeningHistory[0].trackId === currentTrack.id) {
+          listeningHistory[0].currentTime = cur;
+          listeningHistory[0].duration = dur;
         }
       }
-    }, 500);
+    }, 1000);
 
     function openFullPlayerModal() {
       document.getElementById('full-player-modal').classList.remove('hidden');
@@ -762,6 +1049,135 @@
 
     function closeFullPlayerModal() {
       document.getElementById('full-player-modal').classList.add('hidden');
+    }
+
+    // === Favorite Toggle ===
+    function toggleFavorite(trackId) {
+      if (favoriteTrackIds.has(trackId)) {
+        favoriteTrackIds.delete(trackId);
+      } else {
+        favoriteTrackIds.add(trackId);
+      }
+      saveUserData();
+      renderTracksPaginated();
+    }
+
+    function toggleFavoriteCurrent() {
+      if (!currentTrack) return;
+      toggleFavorite(currentTrack.id);
+      const isFav = favoriteTrackIds.has(currentTrack.id);
+      document.getElementById('mini-fav-icon').className = isFav ? 'fa-solid fa-heart text-rose-500' : 'fa-regular fa-heart';
+    }
+
+    // === Notes Modal ===
+    function openNoteModalForCurrent() {
+      if (!currentTrack) {
+        alert('Please play a lecture first to attach your study notes!');
+        return;
+      }
+      document.getElementById('note-lecture-title').textContent = currentTrack.title;
+      document.getElementById('note-text-input').value = '';
+      document.getElementById('note-modal').classList.remove('hidden');
+    }
+
+    function closeNoteModal() {
+      document.getElementById('note-modal').classList.add('hidden');
+    }
+
+    function saveNote() {
+      const text = document.getElementById('note-text-input').value.trim();
+      if (!text || !currentTrack) return;
+      let timestamp = '0:00';
+      if (ytPlayer && ytPlayer.getCurrentTime) timestamp = formatTime(ytPlayer.getCurrentTime());
+      else if (audio.currentTime) timestamp = formatTime(audio.currentTime);
+
+      studyNotes.unshift({
+        trackId: currentTrack.id,
+        lectureTitle: currentTrack.title,
+        text: text,
+        timestamp: timestamp,
+        date: new Date().toLocaleDateString()
+      });
+      saveUserData();
+      closeNoteModal();
+      alert('✓ Study note saved to your Dashboard!');
+    }
+
+    function deleteNote(idx) {
+      studyNotes.splice(idx, 1);
+      saveUserData();
+    }
+
+    function exportNotes() {
+      if (studyNotes.length === 0) {
+        alert('No notes to export.');
+        return;
+      }
+      let md = `# Vani Vault - Personal Study Notes\nDevotee: ${userProfile.name}\nExported: ${new Date().toLocaleString()}\n\n---\n\n`;
+      studyNotes.forEach(n => {
+        md += `### 📖 ${n.lectureTitle}\n**Timestamp:** ${n.timestamp} | **Date:** ${n.date}\n\n${n.text}\n\n---\n\n`;
+      });
+      const blob = new Blob([md], { type: 'text/markdown' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `VaniVault_Notes_${Date.now()}.md`;
+      a.click();
+    }
+
+    // === Profile Modal ===
+    function openEditProfileModal() {
+      document.getElementById('input-profile-name').value = userProfile.name;
+      document.getElementById('input-profile-status').value = userProfile.status;
+      document.getElementById('profile-modal').classList.remove('hidden');
+    }
+
+    function closeEditProfileModal() {
+      document.getElementById('profile-modal').classList.add('hidden');
+    }
+
+    function saveProfile() {
+      const name = document.getElementById('input-profile-name').value.trim() || 'Devotee';
+      const status = document.getElementById('input-profile-status').value.trim() || 'Practitioner';
+      userProfile.name = name;
+      userProfile.status = status;
+      updateProfileUI();
+      saveUserData();
+      closeEditProfileModal();
+    }
+
+    // === Custom Playlists ===
+    function promptCreatePlaylist() {
+      const name = prompt('Enter custom playlist name: (e.g. My Morning Japa & Katha, BG Exam Prep)');
+      if (!name || !name.trim()) return;
+      customPlaylists.push({
+        id: 'user_pl_' + Date.now(),
+        name: name.trim(),
+        trackIds: currentTrack ? [currentTrack.id] : []
+      });
+      saveUserData();
+    }
+
+    function playCustomPlaylist(idx) {
+      const pl = customPlaylists[idx];
+      if (!pl || !pl.trackIds || pl.trackIds.length === 0) {
+        alert('This playlist is empty.');
+        return;
+      }
+      currentPlaylistTracks = pl.trackIds.map(id => allTracks.find(t => t.id === id)).filter(Boolean);
+      if (currentPlaylistTracks.length > 0) {
+        currentTrackIndex = 0;
+        loadAndPlay(currentPlaylistTracks[0]);
+      }
+    }
+
+    function deleteCustomPlaylist(idx) {
+      customPlaylists.splice(idx, 1);
+      saveUserData();
+    }
+
+    function clearHistory() {
+      listeningHistory = [];
+      saveUserData();
     }
 
     async function saveCurrentTrackOffline() {
@@ -774,7 +1190,6 @@
         tx.objectStore('audio_cache').put({ id: currentTrack.id, blob, track: currentTrack });
         tx.oncomplete = () => {
           offlineTrackMap.set(currentTrack.id, { id: currentTrack.id, blob, track: currentTrack });
-          document.getElementById('offline-badge-count').textContent = offlineTrackMap.size;
           document.getElementById('offline-view-count').textContent = offlineTrackMap.size;
           alert('✓ Downloaded for offline playback!');
           renderOfflineTracks();
@@ -790,7 +1205,6 @@
       tx.objectStore('audio_cache').delete(id);
       tx.oncomplete = () => {
         offlineTrackMap.delete(id);
-        document.getElementById('offline-badge-count').textContent = offlineTrackMap.size;
         document.getElementById('offline-view-count').textContent = offlineTrackMap.size;
         renderOfflineTracks();
       };
