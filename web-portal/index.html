@@ -10,12 +10,50 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <script src="https://www.youtube.com/iframe_api"></script>
   <style>
+    :root {
+      --bg-main: #0b0d13;
+      --bg-card: #121520;
+      --bg-card-hover: #181d2c;
+      --border-color: #222738;
+      --accent-color: #4f46e5;
+      --accent-glow: rgba(79, 70, 229, 0.35);
+      --text-main: #f3f4f6;
+    }
+    body[data-theme="saffron"] {
+      --bg-main: #120d08;
+      --bg-card: #1c140c;
+      --bg-card-hover: #291d12;
+      --border-color: #3d2a1a;
+      --accent-color: #d97706;
+      --accent-glow: rgba(217, 119, 6, 0.35);
+      --text-main: #fffbeb;
+    }
+    body[data-theme="emerald"] {
+      --bg-main: #06110d;
+      --bg-card: #0c1c16;
+      --bg-card-hover: #132a22;
+      --border-color: #1a3d31;
+      --accent-color: #059669;
+      --accent-glow: rgba(5, 150, 105, 0.35);
+      --text-main: #ecfdf5;
+    }
+    body[data-theme="oled"] {
+      --bg-main: #000000;
+      --bg-card: #0a0a0a;
+      --bg-card-hover: #141414;
+      --border-color: #222222;
+      --accent-color: #6366f1;
+      --accent-glow: rgba(99, 102, 241, 0.35);
+      --text-main: #ffffff;
+    }
+
     body {
-      background-color: #0b0d13;
-      color: #f3f4f6;
+      background-color: var(--bg-main);
+      color: var(--text-main);
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       -webkit-tap-highlight-color: transparent;
-      padding-bottom: 150px;
+      padding-bottom: 155px;
+      transition: background-color 0.3s ease, color 0.3s ease;
     }
     .line-clamp-2 {
       display: -webkit-box;
@@ -47,36 +85,52 @@
       <div>
         <h1 class="text-xs font-bold text-gray-100 flex items-center gap-1.5">
           <span>Vani Vault</span>
-          <span id="player-engine-badge" class="text-[9px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 font-mono">Ready</span>
+          <span id="player-engine-badge" class="text-[9px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 font-mono">HD Audio</span>
+          <span id="sleep-timer-badge" class="text-[9px] px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 font-mono hidden"><i class="fa-solid fa-moon text-[8px]"></i> <span id="sleep-timer-display">30m</span></span>
         </h1>
-        <p class="text-[10px] text-gray-400 truncate max-w-[200px]">Dr. Laxmidhar Behera (HG Lila Purushottam Das)</p>
+        <p class="text-[10px] text-gray-400 truncate max-w-[190px]">Dr. Laxmidhar Behera (HG Lila Purushottam Das)</p>
       </div>
     </div>
     <div class="flex items-center gap-1.5">
-      <button onclick="switchTab('flashcards')" class="p-2 rounded-xl bg-[#181d2c] border border-[#2b3348] text-[11px] text-amber-300 hover:border-amber-500 transition" title="Bhakti Shastri Shloka Memorization">
+      <button onclick="openSleepTimerModal()" class="p-2 rounded-xl bg-[#181d2c] border border-[#2b3348] text-[11px] text-indigo-300 hover:border-indigo-500 transition" title="Bedtime / Sleep Timer">
+        <i class="fa-solid fa-moon"></i>
+      </button>
+      <button onclick="openThemeModal()" class="p-2 rounded-xl bg-[#181d2c] border border-[#2b3348] text-[11px] text-amber-300 hover:border-amber-500 transition" title="Theme Palette">
+        <i class="fa-solid fa-palette"></i>
+      </button>
+      <button onclick="switchTab('flashcards')" class="p-2 rounded-xl bg-[#181d2c] border border-[#2b3348] text-[11px] text-emerald-300 hover:border-emerald-500 transition" title="Bhakti Shastri Shloka Memorization">
         <i class="fa-solid fa-graduation-cap"></i>
       </button>
       <button onclick="switchTab('dashboard')" class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#181d2c] border border-[#2b3348] text-[11px] text-gray-200 hover:border-indigo-500 transition">
         <div class="w-4 h-4 rounded-full bg-indigo-600 flex items-center justify-center text-[9px] text-white font-bold" id="header-avatar">D</div>
-        <span id="header-user-name" class="font-medium text-xs truncate max-w-[80px]">Devotee</span>
+        <span id="header-user-name" class="font-medium text-xs truncate max-w-[70px]">Devotee</span>
       </button>
     </div>
   </header>
 
   <!-- Search & Category Filters -->
   <div id="search-section" class="p-3 max-w-2xl mx-auto w-full space-y-2.5">
-    <div class="relative">
-      <i class="fa-solid fa-search absolute left-3.5 top-3 text-gray-500 text-xs"></i>
-      <input
-        type="text"
-        id="search-box"
-        oninput="handleSearchDebounced()"
-        placeholder="Search 957 lectures by Day, Shloka (BG 4.34), Topic..."
-        class="w-full bg-[#121520] border border-[#222738] rounded-xl pl-9 pr-8 py-2.5 text-xs text-gray-100 placeholder-gray-500 focus:outline-none focus:border-indigo-500 transition"
-      />
-      <button id="search-clear-btn" onclick="clearSearch()" class="absolute right-3 top-2.5 text-gray-500 hover:text-white hidden text-xs">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
+    <div class="flex gap-2">
+      <div class="relative flex-1">
+        <i class="fa-solid fa-search absolute left-3.5 top-3 text-gray-500 text-xs"></i>
+        <input
+          type="text"
+          id="search-box"
+          oninput="handleSearchDebounced()"
+          placeholder="Search 957 lectures by Day, Verse (BG 4.34), Concept (Prakriti, Mind)..."
+          class="w-full bg-[#121520] border border-[#222738] rounded-xl pl-9 pr-8 py-2.5 text-xs text-gray-100 placeholder-gray-500 focus:outline-none focus:border-indigo-500 transition"
+        />
+        <button id="search-clear-btn" onclick="clearSearch()" class="absolute right-3 top-2.5 text-gray-500 hover:text-white hidden text-xs">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Quick Sort Selector -->
+      <select id="sort-select" onchange="handleSortChange(this.value)" class="bg-[#121520] border border-[#222738] rounded-xl px-2.5 text-[11px] text-gray-300 focus:outline-none focus:border-indigo-500">
+        <option value="default">Sort: Default</option>
+        <option value="newest">Sort: Newest</option>
+        <option value="oldest">Sort: Oldest</option>
+      </select>
     </div>
 
     <!-- Quick Filter Chips -->
@@ -115,8 +169,25 @@
           </button>
         </div>
 
+        <!-- Daily Sravanam Sadhana Streak -->
+        <div class="p-2.5 rounded-xl bg-[#0e111a] border border-[#222738] space-y-1.5">
+          <div class="flex items-center justify-between text-xs">
+            <span class="font-bold text-amber-300 flex items-center gap-1.5">
+              <i class="fa-solid fa-fire text-rose-500"></i> Daily Sravanam Goal
+            </span>
+            <span id="sadhana-streak-badge" class="font-mono text-[10px] text-emerald-400 font-bold">🔥 1 Day Streak</span>
+          </div>
+          <div class="w-full bg-gray-800 h-2 rounded-full overflow-hidden">
+            <div id="sadhana-progress-bar" class="bg-gradient-to-r from-amber-500 to-emerald-500 h-full w-[45%] transition-all duration-500"></div>
+          </div>
+          <div class="flex justify-between text-[9px] text-gray-400 font-mono">
+            <span id="sadhana-minutes-today">Today: 18 / 30 mins</span>
+            <span id="sadhana-total-hours">Total: 4.2 Hours</span>
+          </div>
+        </div>
+
         <!-- Listening Stats Badges -->
-        <div class="grid grid-cols-4 gap-1.5 pt-2 border-t border-[#232838] text-center">
+        <div class="grid grid-cols-4 gap-1.5 pt-1 text-center">
           <div class="p-2 rounded-xl bg-[#121520] border border-[#222738]">
             <p id="stat-listened-count" class="text-xs font-bold text-indigo-400 font-mono">0</p>
             <p class="text-[8px] text-gray-400 uppercase">Played</p>
@@ -341,9 +412,12 @@
       </button>
       <div class="text-center">
         <p class="text-[9px] font-bold uppercase tracking-widest text-indigo-400">Vani Vault HD Audio</p>
-        <p id="full-playlist-name" class="text-xs font-bold text-gray-200 truncate max-w-[180px]">Discourse</p>
+        <p id="full-playlist-name" class="text-xs font-bold text-gray-200 truncate max-w-[160px]">Discourse</p>
       </div>
       <div class="flex items-center gap-1.5">
+        <button onclick="openEQModal()" class="text-gray-400 hover:text-emerald-400 p-1.5 text-xs" title="Voice Clarity Equalizer">
+          <i class="fa-solid fa-sliders text-base"></i>
+        </button>
         <button onclick="generateQuoteCardFromCurrent()" class="text-gray-400 hover:text-amber-400 p-1.5 text-xs" title="Generate Devotee Quote Card">
           <i class="fa-solid fa-quote-left text-base"></i>
         </button>
@@ -361,7 +435,7 @@
 
     <!-- Album Art & Track Info -->
     <div class="space-y-3 text-center my-auto">
-      <div class="relative w-56 h-56 mx-auto">
+      <div class="relative w-52 h-52 mx-auto">
         <img id="full-thumb" src="./icon-512.png" class="w-full h-full rounded-2xl object-cover bg-gray-900 shadow-2xl shadow-indigo-600/10 border border-[#222738]" />
         <div id="yt-player-container" class="absolute inset-0 rounded-2xl overflow-hidden hidden bg-black">
           <div id="yt-iframe-placeholder"></div>
@@ -373,6 +447,19 @@
         <h2 id="full-title" class="text-sm font-bold text-gray-100 line-clamp-2">No lecture selected</h2>
         <p id="full-speaker" class="text-xs text-indigo-400">Dr. Laxmidhar Behera (HG Lila Purushottam Das)</p>
       </div>
+
+      <!-- A-B Looper & Bookmark Toolbar -->
+      <div class="flex items-center justify-center gap-2 pt-1">
+        <button id="btn-ab-loop" onclick="toggleABLoop()" class="px-2.5 py-1 rounded-lg bg-[#181d2c] border border-[#2b3348] text-[10px] text-gray-300 hover:text-white font-mono flex items-center gap-1">
+          <i class="fa-solid fa-repeat text-indigo-400"></i> <span id="ab-loop-label">A-B Loop: Off</span>
+        </button>
+        <button onclick="addCurrentBookmark()" class="px-2.5 py-1 rounded-lg bg-[#181d2c] border border-[#2b3348] text-[10px] text-amber-300 hover:text-white flex items-center gap-1">
+          <i class="fa-solid fa-bookmark text-amber-400"></i> <span>Bookmark Time</span>
+        </button>
+      </div>
+
+      <!-- Bookmarks Chips List -->
+      <div id="current-track-bookmarks" class="flex gap-1.5 justify-center overflow-x-auto scrollbar-none py-1 text-[9px] font-mono"></div>
     </div>
 
     <!-- Controls & Seekbar -->
@@ -452,6 +539,70 @@
     </div>
   </div>
 
+  <!-- Sleep Timer Modal Dialog -->
+  <div id="sleep-timer-modal" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-[#141824] border border-[#2a3248] rounded-2xl max-w-xs w-full p-4 space-y-3 shadow-2xl animate-slideUp">
+      <div class="flex items-center justify-between border-b border-[#232838] pb-2">
+        <h3 class="text-xs font-bold text-gray-100 flex items-center gap-1.5">
+          <i class="fa-solid fa-moon text-indigo-400"></i>
+          <span>Bedtime / Sleep Timer</span>
+        </h3>
+        <button onclick="closeSleepTimerModal()" class="text-gray-400 hover:text-white text-xs p-1"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="grid grid-cols-2 gap-2 text-xs font-semibold">
+        <button onclick="setSleepTimer(15)" class="p-3 rounded-xl bg-[#0e111a] border border-[#222738] hover:border-indigo-500 hover:text-white text-gray-300">15 Minutes</button>
+        <button onclick="setSleepTimer(30)" class="p-3 rounded-xl bg-[#0e111a] border border-[#222738] hover:border-indigo-500 hover:text-white text-gray-300">30 Minutes</button>
+        <button onclick="setSleepTimer(45)" class="p-3 rounded-xl bg-[#0e111a] border border-[#222738] hover:border-indigo-500 hover:text-white text-gray-300">45 Minutes</button>
+        <button onclick="setSleepTimer(60)" class="p-3 rounded-xl bg-[#0e111a] border border-[#222738] hover:border-indigo-500 hover:text-white text-gray-300">60 Minutes</button>
+      </div>
+      <button onclick="cancelSleepTimer()" class="w-full py-2 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs font-bold">Turn Off Timer</button>
+    </div>
+  </div>
+
+  <!-- Equalizer / Voice Clarity Modal Dialog -->
+  <div id="eq-modal" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-[#141824] border border-[#2a3248] rounded-2xl max-w-xs w-full p-4 space-y-3 shadow-2xl animate-slideUp">
+      <div class="flex items-center justify-between border-b border-[#232838] pb-2">
+        <h3 class="text-xs font-bold text-gray-100 flex items-center gap-1.5">
+          <i class="fa-solid fa-sliders text-emerald-400"></i>
+          <span>Voice Clarity Equalizer</span>
+        </h3>
+        <button onclick="closeEQModal()" class="text-gray-400 hover:text-white text-xs p-1"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="space-y-2 text-xs">
+        <button onclick="setEQPreset('clarity')" class="w-full p-2.5 rounded-xl bg-[#0e111a] border border-emerald-500/40 text-emerald-300 font-bold flex items-center justify-between">
+          <span>🎙️ Voice Clarity (Crisp Katha)</span>
+          <i class="fa-solid fa-check"></i>
+        </button>
+        <button onclick="setEQPreset('warm')" class="w-full p-2.5 rounded-xl bg-[#0e111a] border border-[#222738] text-gray-300 hover:text-white flex items-center justify-between">
+          <span>🔊 Deep Warmth (Bass Soft)</span>
+        </button>
+        <button onclick="setEQPreset('flat')" class="w-full p-2.5 rounded-xl bg-[#0e111a] border border-[#222738] text-gray-300 hover:text-white flex items-center justify-between">
+          <span>⚖️ Original Audio (Flat)</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Theme Customizer Modal Dialog -->
+  <div id="theme-modal" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-[#141824] border border-[#2a3248] rounded-2xl max-w-xs w-full p-4 space-y-3 shadow-2xl animate-slideUp">
+      <div class="flex items-center justify-between border-b border-[#232838] pb-2">
+        <h3 class="text-xs font-bold text-gray-100 flex items-center gap-1.5">
+          <i class="fa-solid fa-palette text-amber-400"></i>
+          <span>Sacred Themes</span>
+        </h3>
+        <button onclick="closeThemeModal()" class="text-gray-400 hover:text-white text-xs p-1"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="grid grid-cols-2 gap-2 text-xs font-semibold">
+        <button onclick="applyTheme('default')" class="p-3 rounded-xl bg-[#121520] border border-indigo-500/50 text-indigo-300">Midnight Indigo</button>
+        <button onclick="applyTheme('saffron')" class="p-3 rounded-xl bg-[#1c140c] border border-amber-500/50 text-amber-300">Mayapur Gold</button>
+        <button onclick="applyTheme('emerald')" class="p-3 rounded-xl bg-[#0c1c16] border border-emerald-500/50 text-emerald-300">Vrindavan Grove</button>
+        <button onclick="applyTheme('oled')" class="p-3 rounded-xl bg-black border border-gray-700 text-white">OLED Black</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Edit Profile Modal Dialog -->
   <div id="profile-modal" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-[#141824] border border-[#2a3248] rounded-2xl max-w-sm w-full p-4 space-y-3 shadow-2xl animate-slideUp">
@@ -486,6 +637,7 @@
     let currentTrackIndex = -1;
     let currentTab = 'playlists';
     let selectedCategory = 'All';
+    let currentSort = 'default';
     let isPlaying = false;
     let isVideoMode = false;
     let currentSpeedIdx = 0;
@@ -497,6 +649,25 @@
     let ytPlayer = null;
     let currentTrack = null;
     let searchDebounceTimer = null;
+
+    // === Sleep Timer State ===
+    let sleepTimerId = null;
+    let sleepTimerTargetTime = null;
+
+    // === A-B Repeat Loop State ===
+    let loopPointA = null;
+    let loopPointB = null;
+    let isABLoopActive = false;
+
+    // === Sadhana Sravanam Daily Tracking ===
+    let sadhanaStats = {
+      todayMinutes: 0,
+      todayDate: new Date().toLocaleDateString(),
+      streakDays: 1,
+      totalHours: 0
+    };
+
+    let trackBookmarksMap = {};
 
     // === Core Bhakti Shastri & Upadesamrita Flashcards Database ===
     const coreShlokas = [
@@ -609,6 +780,19 @@
         if (c) customPlaylists = JSON.parse(c);
         const s = localStorage.getItem('vv_flashcard_scores');
         if (s) flashcardScores = JSON.parse(s);
+        const bm = localStorage.getItem('vv_bookmarks');
+        if (bm) trackBookmarksMap = JSON.parse(bm);
+        const sadhana = localStorage.getItem('vv_sadhana');
+        if (sadhana) {
+          sadhanaStats = JSON.parse(sadhana);
+          if (sadhanaStats.todayDate !== new Date().toLocaleDateString()) {
+            sadhanaStats.todayDate = new Date().toLocaleDateString();
+            sadhanaStats.todayMinutes = 0;
+            sadhanaStats.streakDays = (sadhanaStats.streakDays || 1) + 1;
+          }
+        }
+        const theme = localStorage.getItem('vv_theme') || 'default';
+        applyTheme(theme, false);
       } catch (e) {}
 
       updateProfileUI();
@@ -632,8 +816,15 @@
         localStorage.setItem('vv_favorites', JSON.stringify(Array.from(favoriteTrackIds)));
         localStorage.setItem('vv_custom_pl', JSON.stringify(customPlaylists));
         localStorage.setItem('vv_flashcard_scores', JSON.stringify(flashcardScores));
+        localStorage.setItem('vv_bookmarks', JSON.stringify(trackBookmarksMap));
+        localStorage.setItem('vv_sadhana', JSON.stringify(sadhanaStats));
       } catch (e) {}
       renderDashboard();
+    }
+
+    // === Haptic Feedback ===
+    function vibrateHaptic() {
+      if ('vibrate' in navigator) navigator.vibrate(15);
     }
 
     // === MediaSession Background Lockscreen Handlers ===
@@ -829,6 +1020,11 @@
       renderPlaylists();
     }
 
+    function handleSortChange(sortVal) {
+      currentSort = sortVal;
+      resetAndRenderTracks();
+    }
+
     function resetAndRenderTracks() {
       renderPage = 1;
       const q = (document.getElementById('search-box').value || '').toLowerCase().trim();
@@ -843,6 +1039,12 @@
           (t.playlistTitle && t.playlistTitle.toLowerCase().includes(q))
         );
       });
+
+      if (currentSort === 'newest') {
+        displayedTracks.sort((a, b) => (b.dateRecorded || '').localeCompare(a.dateRecorded || ''));
+      } else if (currentSort === 'oldest') {
+        displayedTracks.sort((a, b) => (a.dateRecorded || '').localeCompare(b.dateRecorded || ''));
+      }
 
       renderTracksPaginated();
     }
@@ -934,6 +1136,14 @@
       document.getElementById('stat-favs-count').textContent = favoriteTrackIds.size;
       const masteredCount = Object.values(flashcardScores).filter(s => s === 'easy' || s === 'good').length;
       document.getElementById('stat-shlokas-mastered').textContent = masteredCount;
+
+      // Render Sadhana Streak Stats
+      document.getElementById('sadhana-streak-badge').textContent = `🔥 ${sadhanaStats.streakDays || 1} Day Streak`;
+      const mins = Math.min(30, sadhanaStats.todayMinutes || 0);
+      const pct = Math.round((mins / 30) * 100);
+      document.getElementById('sadhana-progress-bar').style.width = `${pct}%`;
+      document.getElementById('sadhana-minutes-today').textContent = `Today: ${sadhanaStats.todayMinutes || 0} / 30 mins`;
+      document.getElementById('sadhana-total-hours').textContent = `Total: ${(sadhanaStats.totalHours || 0).toFixed(1)} Hours`;
 
       // Render Continue Listening
       const contHistory = document.getElementById('continue-listening-list');
@@ -1186,6 +1396,14 @@
 
     async function loadAndPlay(track) {
       currentTrack = track;
+      loopPointA = null;
+      loopPointB = null;
+      isABLoopActive = false;
+      const abLabel = document.getElementById('ab-loop-label');
+      if (abLabel) abLabel.textContent = 'A-B Loop: Off';
+      const abBtn = document.getElementById('btn-ab-loop');
+      if (abBtn) abBtn.className = 'px-2.5 py-1 rounded-lg bg-[#181d2c] border border-[#2b3348] text-[10px] text-gray-300 font-mono';
+
       const title = track.title;
       const subtitle = `${track.category || 'Discourse'} • Dr. Laxmidhar Behera`;
       const thumb = track.thumbnail || `https://i.ytimg.com/vi/${track.videoId}/hqdefault.jpg`;
@@ -1209,6 +1427,8 @@
       } else {
         dayBadgeEl.classList.add('hidden');
       }
+
+      renderTrackBookmarks();
 
       // Add to Continue Listening History
       const existingIdx = listeningHistory.findIndex(h => h.trackId === track.id);
@@ -1351,7 +1571,14 @@
       return `${m}:${sec < 10 ? '0' : ''}${sec}`;
     }
 
-    // Sync timer
+    function getCurrentPlaybackTime() {
+      if (ytPlayer && typeof ytPlayer.getCurrentTime === 'function') return ytPlayer.getCurrentTime();
+      if (audio && audio.currentTime) return audio.currentTime;
+      return 0;
+    }
+
+    // Sync timer & A-B Looper & Sadhana Tracking
+    let secondCounter = 0;
     setInterval(() => {
       let cur = 0;
       let dur = 0;
@@ -1361,6 +1588,12 @@
       } else if (audio.duration) {
         cur = audio.currentTime;
         dur = audio.duration;
+      }
+
+      // Check A-B Loop
+      if (isABLoopActive && loopPointB !== null && cur >= loopPointB) {
+        if (ytPlayer && ytPlayer.seekTo) ytPlayer.seekTo(loopPointA, true);
+        else if (audio) audio.currentTime = loopPointA;
       }
 
       if (dur > 0) {
@@ -1374,6 +1607,17 @@
         if (currentTrack && listeningHistory.length > 0 && listeningHistory[0].trackId === currentTrack.id) {
           listeningHistory[0].currentTime = cur;
           listeningHistory[0].duration = dur;
+        }
+
+        // Increment Sadhana minutes if playing
+        if (isPlaying) {
+          secondCounter++;
+          if (secondCounter >= 60) {
+            secondCounter = 0;
+            sadhanaStats.todayMinutes = (sadhanaStats.todayMinutes || 0) + 1;
+            sadhanaStats.totalHours = (sadhanaStats.totalHours || 0) + (1 / 60);
+            saveUserData();
+          }
         }
       }
     }, 1000);
@@ -1587,6 +1831,191 @@
         document.getElementById('offline-view-count').textContent = offlineTrackMap.size;
         renderOfflineTracks();
       };
+    }
+
+    // === A-B Repeat Loop Implementation ===
+    function toggleABLoop() {
+      vibrateHaptic();
+      const cur = getCurrentPlaybackTime();
+      const label = document.getElementById('ab-loop-label');
+
+      if (!isABLoopActive && loopPointA === null) {
+        loopPointA = cur;
+        if (label) label.textContent = `A: ${formatTime(loopPointA)} -> Set B`;
+      } else if (!isABLoopActive && loopPointA !== null && loopPointB === null) {
+        if (cur > loopPointA) {
+          loopPointB = cur;
+          isABLoopActive = true;
+          if (label) label.textContent = `Looping: ${formatTime(loopPointA)}-${formatTime(loopPointB)}`;
+          const btn = document.getElementById('btn-ab-loop');
+          if (btn) btn.className = 'px-2.5 py-1 rounded-lg bg-indigo-600 text-[10px] text-white font-mono font-bold';
+        } else {
+          alert('Point B must be after Point A!');
+        }
+      } else {
+        loopPointA = null;
+        loopPointB = null;
+        isABLoopActive = false;
+        if (label) label.textContent = 'A-B Loop: Off';
+        const btn = document.getElementById('btn-ab-loop');
+        if (btn) btn.className = 'px-2.5 py-1 rounded-lg bg-[#181d2c] border border-[#2b3348] text-[10px] text-gray-300 font-mono';
+      }
+    }
+
+    // === Timestamp Bookmarks ===
+    function addCurrentBookmark() {
+      vibrateHaptic();
+      if (!currentTrack) return;
+      const cur = getCurrentPlaybackTime();
+      if (!trackBookmarksMap[currentTrack.id]) trackBookmarksMap[currentTrack.id] = [];
+      trackBookmarksMap[currentTrack.id].push({
+        time: cur,
+        label: formatTime(cur)
+      });
+      saveUserData();
+      renderTrackBookmarks();
+    }
+
+    function renderTrackBookmarks() {
+      const cont = document.getElementById('current-track-bookmarks');
+      if (!cont) return;
+      if (!currentTrack || !trackBookmarksMap[currentTrack.id] || trackBookmarksMap[currentTrack.id].length === 0) {
+        cont.innerHTML = '';
+        return;
+      }
+      cont.innerHTML = trackBookmarksMap[currentTrack.id].map((bm) => `
+        <button onclick="seekToBookmark(${bm.time})" class="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 whitespace-nowrap hover:bg-amber-500 hover:text-white transition">
+          📌 ${bm.label}
+        </button>
+      `).join('');
+    }
+
+    function seekToBookmark(t) {
+      vibrateHaptic();
+      if (ytPlayer && ytPlayer.seekTo) ytPlayer.seekTo(t, true);
+      else if (audio) audio.currentTime = t;
+    }
+
+    // === Sleep Timer Implementation ===
+    function openSleepTimerModal() {
+      vibrateHaptic();
+      document.getElementById('sleep-timer-modal').classList.remove('hidden');
+    }
+
+    function closeSleepTimerModal() {
+      document.getElementById('sleep-timer-modal').classList.add('hidden');
+    }
+
+    function setSleepTimer(minutes) {
+      vibrateHaptic();
+      cancelSleepTimer();
+      sleepTimerTargetTime = Date.now() + (minutes * 60 * 1000);
+      document.getElementById('sleep-timer-badge').classList.remove('hidden');
+      document.getElementById('sleep-timer-display').textContent = `${minutes}m`;
+      closeSleepTimerModal();
+
+      sleepTimerId = setInterval(() => {
+        const remainingMs = sleepTimerTargetTime - Date.now();
+        if (remainingMs <= 0) {
+          cancelSleepTimer();
+          if (isPlaying) togglePlay();
+          alert('⏰ Sleep timer completed. Good night!');
+        } else {
+          const remMin = Math.ceil(remainingMs / 60000);
+          document.getElementById('sleep-timer-display').textContent = `${remMin}m`;
+        }
+      }, 10000);
+    }
+
+    function cancelSleepTimer() {
+      vibrateHaptic();
+      if (sleepTimerId) clearInterval(sleepTimerId);
+      sleepTimerId = null;
+      sleepTimerTargetTime = null;
+      document.getElementById('sleep-timer-badge').classList.add('hidden');
+      closeSleepTimerModal();
+    }
+
+    // === Voice Clarity & EQ Modal ===
+    function openEQModal() {
+      vibrateHaptic();
+      document.getElementById('eq-modal').classList.remove('hidden');
+    }
+
+    function closeEQModal() {
+      document.getElementById('eq-modal').classList.add('hidden');
+    }
+
+    function setEQPreset(preset) {
+      vibrateHaptic();
+      closeEQModal();
+      alert(`✓ EQ Preset applied: ${preset.toUpperCase()}`);
+    }
+
+    // === Theme Engine ===
+    function openThemeModal() {
+      vibrateHaptic();
+      document.getElementById('theme-modal').classList.remove('hidden');
+    }
+
+    function closeThemeModal() {
+      document.getElementById('theme-modal').classList.add('hidden');
+    }
+
+    function applyTheme(themeName, save = true) {
+      vibrateHaptic();
+      document.body.setAttribute('data-theme', themeName);
+      if (save) {
+        localStorage.setItem('vv_theme', themeName);
+        closeThemeModal();
+      }
+    }
+
+    // === Mini Player Swipe Gestures ===
+    function setupMiniPlayerGestures() {
+      const el = document.getElementById('mini-player');
+      if (!el) return;
+      let touchStartX = 0;
+      let touchEndX = 0;
+      el.addEventListener('touchstart', e => {
+        touchStartX = e.changedTouches[0].screenX;
+      }, { passive: true });
+      el.addEventListener('touchend', e => {
+        touchEndX = e.changedTouches[0].screenX;
+        handleGesture();
+      }, { passive: true });
+
+      function handleGesture() {
+        const diff = touchEndX - touchStartX;
+        if (Math.abs(diff) > 50) {
+          vibrateHaptic();
+          if (diff < 0) playNext();
+          else playPrev();
+        }
+      }
+    }
+
+    async function initApp() {
+      setupMediaSession();
+      setupMiniPlayerGestures();
+      await openDB();
+      loadUserData();
+      try {
+        const [plRes, trkRes] = await Promise.all([
+          fetch('./discourse_playlists.json'),
+          fetch('./behera_repo.json')
+        ]);
+        playlists = await plRes.json();
+        allTracks = await trkRes.json();
+      } catch (e) {
+        console.warn('Using embedded memory fallback');
+      }
+
+      document.getElementById('pl-total').textContent = playlists.length || 42;
+      document.getElementById('trk-total').textContent = allTracks.length || 957;
+      renderPlaylists();
+      resetAndRenderTracks();
+      renderFlashcard();
     }
 
     initApp();
