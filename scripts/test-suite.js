@@ -181,6 +181,28 @@ console.log('\nTest 14: 📅 Vaishnava Fasting & Festival Calendar')
 assert(htmlContent.includes('calendar-modal'), 'Calendar Modal configured')
 assert(htmlContent.includes('Parivartini Ekadashi'), 'Ekadashi fasting dates verified')
 
+// === TEST 15: 🌾 Full Vaishnava Panjika & Parana Windows ===
+console.log('\nTest 15: 🌾 Full Vaishnava Panjika & Parana Break Fast Timings')
+assert(htmlContent.includes('panjikaEvents'), 'Panjika events database configured')
+assert(htmlContent.includes('Parana / Break'), 'Parana fast breaking timings verified')
+assert(htmlContent.includes('Mokshada Ekadashi & Gita Jayanti'), 'Gita Jayanti event verified')
+
+// === TEST 16: 🪔 Damodara Virtual Ghee Lamp Offering Engine ===
+console.log('\nTest 16: 🪔 Damodara Virtual Ghee Lamp Offering')
+assert(htmlContent.includes('lamp-modal'), 'Lamp modal configured')
+assert(htmlContent.includes('offerLampAndPlayDamodara'), 'Lamp offering prayer trigger verified')
+
+// === TEST 17: 🌅 Brahma Muhurta & Sadhana Timings Clock ===
+console.log('\nTest 17: 🌅 Brahma Muhurta & Sadhana Routine')
+assert(htmlContent.includes('Brahma Muhurta Timings'), 'Brahma Muhurta header verified')
+assert(htmlContent.includes('04:24 AM - 05:12 AM'), 'Brahma Muhurta calculation verified')
+
+// === TEST 18: 🌿 Daily Prayers & Aarti Suite ===
+console.log('\nTest 18: 🌿 Daily Prayers & Aarti Suite')
+assert(htmlContent.includes('Sri Tulasi Pranama & Aarti'), 'Tulasi Aarti prayer verified')
+assert(htmlContent.includes('Sri Nrsimha Pranama & Kavaca'), 'Nrsimha Kavaca prayer verified')
+assert(htmlContent.includes('Sri Shikshashtakam'), 'Shikshashtakam prayer verified')
+
 console.log('\n====================================================')
 console.log(`TEST RESULTS: ${passed} PASSED, ${failed} FAILED`)
 console.log('====================================================')

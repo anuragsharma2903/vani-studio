@@ -105,8 +105,11 @@ html_content = r'''<!DOCTYPE html>
       <button onclick="openJapaModal()" class="p-2 rounded-xl bg-[#181d2c] border border-[#2b3348] text-[11px] text-amber-300 hover:border-amber-500 transition" title="📿 Japa Mala & Chanting Counter">
         <i class="fa-solid fa-dharmachakra"></i>
       </button>
-      <button onclick="openCalendarModal()" class="p-2 rounded-xl bg-[#181d2c] border border-[#2b3348] text-[11px] text-rose-300 hover:border-rose-500 transition" title="📅 Ekadashi & Festival Calendar">
+      <button onclick="openCalendarModal()" class="p-2 rounded-xl bg-gradient-to-r from-rose-600/30 to-amber-600/30 border border-rose-500/40 text-[11px] text-rose-300 hover:text-white transition shadow" title="📅 Vaishnava Panjika & Ekadashi Calendar">
         <i class="fa-solid fa-calendar-days"></i>
+      </button>
+      <button onclick="openLampModal()" class="p-2 rounded-xl bg-[#181d2c] border border-[#2b3348] text-[11px] text-amber-400 hover:border-amber-500 transition" title="🪔 Offer Ghee Lamp (Damodara Arati)">
+        <i class="fa-solid fa-fire"></i>
       </button>
       <button onclick="checkForCatalogAndAppUpdates(true)" class="p-2 rounded-xl bg-[#181d2c] border border-[#2b3348] text-[11px] text-emerald-300 hover:border-emerald-500 transition" title="🔄 Check for Updates">
         <i id="update-spinner-icon" class="fa-solid fa-arrows-rotate"></i>
@@ -298,6 +301,34 @@ html_content = r'''<!DOCTYPE html>
           </button>
         </div>
 
+        <!-- 🌅 Daily Brahma Muhurta & Sadhana Clock -->
+        <div class="p-3 rounded-xl bg-gradient-to-r from-[#1c182a] to-[#141220] border border-amber-500/30 space-y-2">
+          <div class="flex items-center justify-between text-xs">
+            <span class="font-bold text-amber-300 flex items-center gap-1.5">
+              <i class="fa-solid fa-sun text-amber-400"></i> Brahma Muhurta Timings
+            </span>
+            <span class="text-[10px] font-mono text-emerald-400 font-bold">04:24 AM - 05:12 AM</span>
+          </div>
+          <div class="grid grid-cols-4 gap-1 text-center text-[9px] font-mono text-gray-300">
+            <div class="p-1.5 rounded-lg bg-[#0e1017] border border-[#222738]">
+              <span class="text-amber-400 font-bold block">04:30 AM</span>
+              <span>Mangala</span>
+            </div>
+            <div class="p-1.5 rounded-lg bg-[#0e1017] border border-[#222738]">
+              <span class="text-amber-400 font-bold block">05:00 AM</span>
+              <span>16 Japa</span>
+            </div>
+            <div class="p-1.5 rounded-lg bg-[#0e1017] border border-[#222738]">
+              <span class="text-amber-400 font-bold block">07:00 AM</span>
+              <span>Darshan</span>
+            </div>
+            <div class="p-1.5 rounded-lg bg-[#0e1017] border border-[#222738]">
+              <span class="text-amber-400 font-bold block">07:30 AM</span>
+              <span>SB Katha</span>
+            </div>
+          </div>
+        </div>
+
         <!-- Daily Sravanam Sadhana Streak -->
         <div class="p-2.5 rounded-xl bg-[#0e111a] border border-[#222738] space-y-1.5">
           <div class="flex items-center justify-between text-xs">
@@ -336,24 +367,30 @@ html_content = r'''<!DOCTYPE html>
         </div>
       </div>
 
-      <!-- Quick Action Cards Grid -->
-      <div class="grid grid-cols-3 gap-2">
-        <div onclick="openVaniAIModal()" class="p-3 rounded-2xl bg-gradient-to-br from-violet-900/40 to-[#121520] border border-violet-500/30 cursor-pointer hover:border-violet-400 transition shadow space-y-1 text-center">
+      <!-- Quick Action Cards Grid (4 Features) -->
+      <div class="grid grid-cols-4 gap-2">
+        <div onclick="openCalendarModal()" class="p-2.5 rounded-2xl bg-gradient-to-br from-rose-900/40 to-[#121520] border border-rose-500/30 cursor-pointer hover:border-rose-400 transition shadow space-y-1 text-center">
+          <i class="fa-solid fa-calendar-days text-rose-400 text-sm"></i>
+          <p class="text-[11px] font-bold text-gray-100">Panjika</p>
+          <p class="text-[8px] text-gray-400">Ekadashi</p>
+        </div>
+
+        <div onclick="openVaniAIModal()" class="p-2.5 rounded-2xl bg-gradient-to-br from-violet-900/40 to-[#121520] border border-violet-500/30 cursor-pointer hover:border-violet-400 transition shadow space-y-1 text-center">
           <i class="fa-solid fa-robot text-amber-400 text-sm"></i>
-          <p class="text-xs font-bold text-gray-100">Vani AI</p>
-          <p class="text-[9px] text-gray-400">Ask Gita AI</p>
+          <p class="text-[11px] font-bold text-gray-100">Vani AI</p>
+          <p class="text-[8px] text-gray-400">Ask Gita AI</p>
         </div>
 
-        <div onclick="openJapaModal()" class="p-3 rounded-2xl bg-gradient-to-br from-amber-900/40 to-[#121520] border border-amber-500/30 cursor-pointer hover:border-amber-400 transition shadow space-y-1 text-center">
+        <div onclick="openJapaModal()" class="p-2.5 rounded-2xl bg-gradient-to-br from-amber-900/40 to-[#121520] border border-amber-500/30 cursor-pointer hover:border-amber-400 transition shadow space-y-1 text-center">
           <i class="fa-solid fa-dharmachakra text-amber-300 text-sm"></i>
-          <p class="text-xs font-bold text-gray-100">Japa Mala</p>
-          <p class="text-[9px] text-gray-400">108 Bead Counter</p>
+          <p class="text-[11px] font-bold text-gray-100">Japa Mala</p>
+          <p class="text-[8px] text-gray-400">108 Beads</p>
         </div>
 
-        <div onclick="openQuizModal()" class="p-3 rounded-2xl bg-gradient-to-br from-emerald-900/40 to-[#121520] border border-emerald-500/30 cursor-pointer hover:border-emerald-400 transition shadow space-y-1 text-center">
-          <i class="fa-solid fa-graduation-cap text-emerald-400 text-sm"></i>
-          <p class="text-xs font-bold text-gray-100">Gita Quiz</p>
-          <p class="text-[9px] text-gray-400">Test Purports</p>
+        <div onclick="openLampModal()" class="p-2.5 rounded-2xl bg-gradient-to-br from-orange-900/40 to-[#121520] border border-orange-500/30 cursor-pointer hover:border-orange-400 transition shadow space-y-1 text-center">
+          <i class="fa-solid fa-fire text-amber-400 text-sm"></i>
+          <p class="text-[11px] font-bold text-gray-100">Ghee Lamp</p>
+          <p class="text-[8px] text-gray-400">Offer Arati</p>
         </div>
       </div>
 
@@ -697,42 +734,66 @@ html_content = r'''<!DOCTYPE html>
     </div>
   </div>
 
-  <!-- 📅 Vaishnava Calendar Modal Dialog -->
+  <!-- 📅 Vaishnava Panjika & Ekadashi Calendar Modal Dialog -->
   <div id="calendar-modal" class="fixed inset-0 bg-black/85 z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-[#141824] border border-[#2a3248] rounded-2xl max-w-sm w-full p-4 space-y-3 shadow-2xl animate-slideUp">
+    <div class="bg-[#141824] border border-[#2a3248] rounded-2xl max-w-md w-full p-4 space-y-3 shadow-2xl animate-slideUp max-h-[85vh] flex flex-col">
       <div class="flex items-center justify-between border-b border-[#232838] pb-2">
         <h3 class="text-xs font-bold text-rose-300 flex items-center gap-1.5">
           <i class="fa-solid fa-calendar-days"></i>
-          <span>Upcoming Ekadashi & Festivals</span>
+          <span>Vaishnava Panjika & Ekadashi Fasts</span>
         </h3>
         <button onclick="closeCalendarModal()" class="text-gray-400 hover:text-white text-xs p-1"><i class="fa-solid fa-xmark"></i></button>
       </div>
-      <div class="space-y-2 text-xs">
-        <div class="p-3 rounded-xl bg-[#0e111a] border border-amber-500/30 flex items-center justify-between">
-          <div>
-            <span class="text-[9px] px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 font-bold font-mono">FASTING DAY</span>
-            <h4 class="font-bold text-gray-100 pt-0.5">Parivartini Ekadashi</h4>
-            <p class="text-[10px] text-gray-400">Fasting from all grains & beans</p>
-          </div>
-          <span class="text-xs font-mono font-bold text-amber-300">Sept 13</span>
-        </div>
-        <div class="p-3 rounded-xl bg-[#0e111a] border border-emerald-500/30 flex items-center justify-between">
-          <div>
-            <span class="text-[9px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 font-bold font-mono">APPEARANCE</span>
-            <h4 class="font-bold text-gray-100 pt-0.5">Sri Vamana Dvadasi</h4>
-            <p class="text-[10px] text-gray-400">Appearance of Lord Vamanadeva</p>
-          </div>
-          <span class="text-xs font-mono font-bold text-emerald-300">Sept 14</span>
-        </div>
-        <div class="p-3 rounded-xl bg-[#0e111a] border border-indigo-500/30 flex items-center justify-between">
-          <div>
-            <span class="text-[9px] px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300 font-bold font-mono">FASTING DAY</span>
-            <h4 class="font-bold text-gray-100 pt-0.5">Indira Ekadashi</h4>
-            <p class="text-[10px] text-gray-400">Delivers departed ancestors</p>
-          </div>
-          <span class="text-xs font-mono font-bold text-indigo-300">Sept 28</span>
+
+      <!-- Month & Tag Filter -->
+      <div class="flex items-center justify-between gap-2 text-xs">
+        <select id="calendar-month-select" onchange="filterCalendarEvents()" class="bg-[#0e111a] border border-[#222738] rounded-xl px-2.5 py-1.5 text-[11px] text-gray-200 focus:outline-none focus:border-indigo-500">
+          <option value="ALL">All Year View (2026-2027)</option>
+          <option value="SEP" selected>September (Hrishikesha)</option>
+          <option value="OCT">October (Padmanabha / Damodara)</option>
+          <option value="NOV">November (Damodara / Kartika)</option>
+          <option value="DEC">December (Keshava / Gita Jayanti)</option>
+        </select>
+        <div class="flex gap-1">
+          <button onclick="setCalFilter('ALL')" class="cal-chip active px-2 py-1 rounded bg-indigo-600 text-[10px] text-white font-bold" data-filter="ALL">All</button>
+          <button onclick="setCalFilter('EKADASHI')" class="cal-chip px-2 py-1 rounded bg-[#0e111a] text-gray-400 text-[10px] border border-[#222738]" data-filter="EKADASHI">🌾 Ekadashi</button>
+          <button onclick="setCalFilter('FESTIVAL')" class="cal-chip px-2 py-1 rounded bg-[#0e111a] text-gray-400 text-[10px] border border-[#222738]" data-filter="FESTIVAL">🌺 Festivals</button>
         </div>
       </div>
+
+      <!-- Calendar Events List -->
+      <div id="calendar-events-list" class="flex-1 overflow-y-auto space-y-2.5 text-xs pr-1"></div>
+
+      <!-- Ekadashi Fasting Rules Footer -->
+      <div class="p-2.5 rounded-xl bg-[#0a0d14] border border-[#1e2436] text-[10px] text-gray-300 space-y-1">
+        <span class="font-bold text-amber-300 block"><i class="fa-solid fa-circle-info"></i> Standard Ekadashi Fasting Rules:</span>
+        <p class="text-gray-400">Strictly avoid grains (rice, wheat, barley), beans, and pulses. Anukalpa Prasadam: Fruits, milk, nuts, root vegetables (potatoes, sweet potatoes), buckwheat (kuttu), sabudana.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🪔 Damodara Virtual Ghee Lamp Modal Dialog -->
+  <div id="lamp-modal" class="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-[#141824] border border-amber-500/40 rounded-2xl max-w-sm w-full p-5 space-y-4 shadow-2xl animate-slideUp text-center">
+      <div class="flex items-center justify-between border-b border-[#232838] pb-2 text-left">
+        <h3 class="text-xs font-bold text-amber-300 flex items-center gap-1.5">
+          <i class="fa-solid fa-fire text-amber-400"></i>
+          <span>Offer Ghee Lamp to Lord Damodara</span>
+        </h3>
+        <button onclick="closeLampModal()" class="text-gray-400 hover:text-white text-xs p-1"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="space-y-3 py-2">
+        <div class="w-28 h-28 mx-auto rounded-full bg-gradient-to-t from-amber-900/60 via-amber-600/30 to-transparent border-2 border-amber-400/50 flex items-center justify-center relative shadow-2xl shadow-amber-500/30">
+          <i class="fa-solid fa-fire text-4xl text-amber-400 lamp-glow"></i>
+        </div>
+        <h4 class="text-sm font-bold text-amber-100">namāmīśvaraṁ sac-cid-ānanda-rūpaṁ</h4>
+        <p class="text-xs text-gray-300 italic px-2">"Offering a ghee lamp to Lord Damodara in the holy month of Kartika grants deliverance from all karmic reactions."</p>
+      </div>
+
+      <button onclick="offerLampAndPlayDamodara()" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-600 to-orange-500 hover:from-amber-500 hover:to-orange-400 text-white text-xs font-bold shadow-lg shadow-amber-600/30 flex items-center justify-center gap-2">
+        <i class="fa-solid fa-music"></i> Offer Lamp & Play Damodarashtakam
+      </button>
     </div>
   </div>
 
@@ -813,7 +874,10 @@ html_content = r'''<!DOCTYPE html>
       <div class="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none text-[10px]" id="songbook-tabs">
         <button onclick="switchSong('radha_madhava')" class="px-2.5 py-1 rounded-full bg-indigo-600 text-white font-bold whitespace-nowrap song-tab" data-song="radha_madhava">Jaya Radha Madhava</button>
         <button onclick="switchSong('damodara')" class="px-2.5 py-1 rounded-full bg-[#0e111a] text-gray-400 border border-[#222738] whitespace-nowrap song-tab" data-song="damodara">Damodarashtakam</button>
+        <button onclick="switchSong('tulasi')" class="px-2.5 py-1 rounded-full bg-[#0e111a] text-gray-400 border border-[#222738] whitespace-nowrap song-tab" data-song="tulasi">Tulasi Aarti</button>
+        <button onclick="switchSong('nrsimha')" class="px-2.5 py-1 rounded-full bg-[#0e111a] text-gray-400 border border-[#222738] whitespace-nowrap song-tab" data-song="nrsimha">Nrsimha Pranama</button>
         <button onclick="switchSong('guru_ashtaka')" class="px-2.5 py-1 rounded-full bg-[#0e111a] text-gray-400 border border-[#222738] whitespace-nowrap song-tab" data-song="guru_ashtaka">Sri Gurvastakam</button>
+        <button onclick="switchSong('shikshashtaka')" class="px-2.5 py-1 rounded-full bg-[#0e111a] text-gray-400 border border-[#222738] whitespace-nowrap song-tab" data-song="shikshashtaka">Shikshashtakam</button>
         <button onclick="switchSong('brahma_samhita')" class="px-2.5 py-1 rounded-full bg-[#0e111a] text-gray-400 border border-[#222738] whitespace-nowrap song-tab" data-song="brahma_samhita">Govindam (BS 5.1)</button>
       </div>
       <div id="songbook-content" class="overflow-y-auto space-y-2 text-xs text-gray-200 leading-relaxed font-serif p-2 rounded-xl bg-[#0d1017] border border-[#222738] flex-1"></div>
@@ -990,6 +1054,121 @@ html_content = r'''<!DOCTYPE html>
     };
 
     let trackBookmarksMap = {};
+
+    // === Calendar Filter State ===
+    let selectedCalFilter = 'ALL';
+
+    // === Complete Vaishnava Panjika Database ===
+    const panjikaEvents = [
+      {
+        month: 'SEP',
+        title: 'Parivartini Ekadashi (Parsva Ekadashi)',
+        tithi: 'Shukla Ekadashi',
+        date: 'Sept 13, 2026',
+        type: 'EKADASHI',
+        parana: 'Sept 14: 05:48 AM - 09:35 AM',
+        desc: 'Lord Vishnu turns over onto His right side in the ocean of milk during Caturmasya. Fasting from all grains and beans.'
+      },
+      {
+        month: 'SEP',
+        title: 'Sri Vamana Dvadasi (Avatara Jayanti)',
+        tithi: 'Shukla Dvadasi',
+        date: 'Sept 14, 2026',
+        type: 'FESTIVAL',
+        parana: 'Fasting till noon',
+        desc: 'Appearance day of Lord Vamanadeva, the dwarf incarnation who reclaimed the three worlds from Bali Maharaja with three steps.'
+      },
+      {
+        month: 'SEP',
+        title: 'Srila Jiva Goswami Appearance',
+        tithi: 'Shukla Trayodasi',
+        date: 'Sept 15, 2026',
+        type: 'FESTIVAL',
+        parana: 'Feast in honor',
+        desc: 'Appearance of Srila Jiva Goswami, author of the Ṣaṭ-Sandarbhas and premier philosopher of Gaudiya Vaishnavism.'
+      },
+      {
+        month: 'SEP',
+        title: 'Indira Ekadashi',
+        tithi: 'Krishna Ekadashi',
+        date: 'Sept 28, 2026',
+        type: 'EKADASHI',
+        parana: 'Sept 29: 05:54 AM - 09:42 AM',
+        desc: 'Fasting on this sacred day liberates ancestors from hellish conditions and elevates them to Vaikuntha.'
+      },
+      {
+        month: 'OCT',
+        title: 'Pashankusha Ekadashi',
+        tithi: 'Shukla Ekadashi',
+        date: 'Oct 12, 2026',
+        type: 'EKADASHI',
+        parana: 'Oct 13: 06:02 AM - 09:48 AM',
+        desc: 'Fasting on Pashankusha Ekadashi curbs all sinful tendencies like an elephant goad and awards pure devotional service.'
+      },
+      {
+        month: 'OCT',
+        title: 'Beginning of Damodara / Kartika Masa (Urja Vrata)',
+        tithi: 'Purnima',
+        date: 'Oct 16, 2026',
+        type: 'FESTIVAL',
+        parana: 'Daily Ghee Lamp Offering',
+        desc: 'The most sacred month for devotion. Offering a ghee lamp to Mother Yashoda and Baby Damodara yields millions of times the spiritual merit.'
+      },
+      {
+        month: 'OCT',
+        title: 'Rama Ekadashi',
+        tithi: 'Krishna Ekadashi',
+        date: 'Oct 27, 2026',
+        type: 'EKADASHI',
+        parana: 'Oct 28: 06:10 AM - 09:55 AM',
+        desc: 'Named after Goddess Lakshmi (Rama). Fulfills all spiritual desires and destroys heaps of sinful reactions.'
+      },
+      {
+        month: 'OCT',
+        title: 'Diwali & Sri Govardhana Puja / Annakuta',
+        tithi: 'Amavasya & Pratipad',
+        date: 'Oct 31 - Nov 01, 2026',
+        type: 'FESTIVAL',
+        parana: 'Offering 108 bhoga dishes',
+        desc: 'Commemoration of Lord Sri Krishna lifting the Govardhana Hill for 7 days to protect the residents of Vrindavan.'
+      },
+      {
+        month: 'NOV',
+        title: 'Srila Prabhupada Disappearance Day (Tirobhava Tithi)',
+        tithi: 'Shukla Caturthi',
+        date: 'Nov 04, 2026',
+        type: 'FESTIVAL',
+        parana: 'Fasting till noon',
+        desc: 'Disappearance day of His Divine Grace A.C. Bhaktivedanta Swami Prabhupada, Founder-Acharya of ISKCON.'
+      },
+      {
+        month: 'NOV',
+        title: 'Utthana Ekadashi (Devotthani Ekadashi) & Tulasi Vivaha',
+        tithi: 'Shukla Ekadashi',
+        date: 'Nov 11, 2026',
+        type: 'EKADASHI',
+        parana: 'Nov 12: 06:20 AM - 10:02 AM',
+        desc: 'Lord Vishnu awakens from His four months of mystic slumber. End of Caturmasya and auspicious Tulasi Shaligram Vivaha.'
+      },
+      {
+        month: 'NOV',
+        title: 'Utpanna Ekadashi',
+        tithi: 'Krishna Ekadashi',
+        date: 'Nov 26, 2026',
+        type: 'EKADASHI',
+        parana: 'Nov 27: 06:28 AM - 10:10 AM',
+        desc: 'Appearance of the personified Ekadashi Devi from the body of Lord Vishnu to slay the demon Mura.'
+      },
+      {
+        month: 'DEC',
+        title: 'Mokshada Ekadashi & Gita Jayanti (Gita Advent Day)',
+        tithi: 'Shukla Ekadashi',
+        date: 'Dec 10, 2026',
+        type: 'EKADASHI',
+        parana: 'Dec 11: 06:36 AM - 10:18 AM',
+        desc: 'The divine day when Lord Sri Krishna spoke the Bhagavad Gita to Arjuna at Kurukshetra. Recitation of all 18 Chapters of Gita.'
+      }
+    ];
 
     // === Core Bhakti Shastri Flashcards ===
     const coreShlokas = [
@@ -1343,14 +1522,104 @@ html_content = r'''<!DOCTYPE html>
       document.getElementById('stat-japa-rounds').textContent = japaRounds;
     }
 
-    // === 📅 Calendar Modal ===
+    // === 📅 Vaishnava Panjika Calendar Engine ===
     function openCalendarModal() {
       vibrateHaptic();
+      renderCalendarEvents();
       document.getElementById('calendar-modal').classList.remove('hidden');
     }
 
     function closeCalendarModal() {
       document.getElementById('calendar-modal').classList.add('hidden');
+    }
+
+    function setCalFilter(filter) {
+      vibrateHaptic();
+      selectedCalFilter = filter;
+      document.querySelectorAll('.cal-chip').forEach(c => {
+        if (c.getAttribute('data-filter') === filter) {
+          c.className = 'cal-chip active px-2 py-1 rounded bg-indigo-600 text-[10px] text-white font-bold';
+        } else {
+          c.className = 'cal-chip px-2 py-1 rounded bg-[#0e111a] text-gray-400 text-[10px] border border-[#222738]';
+        }
+      });
+      renderCalendarEvents();
+    }
+
+    function filterCalendarEvents() {
+      renderCalendarEvents();
+    }
+
+    function renderCalendarEvents() {
+      const cont = document.getElementById('calendar-events-list');
+      const selMonth = document.getElementById('calendar-month-select').value;
+
+      const filtered = panjikaEvents.filter(ev => {
+        if (selMonth !== 'ALL' && ev.month !== selMonth) return false;
+        if (selectedCalFilter === 'EKADASHI' && ev.type !== 'EKADASHI') return false;
+        if (selectedCalFilter === 'FESTIVAL' && ev.type !== 'FESTIVAL') return false;
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        cont.innerHTML = '<div class="p-6 text-center text-xs text-gray-400">No events found for this selection.</div>';
+        return;
+      }
+
+      cont.innerHTML = filtered.map(ev => {
+        const isEkadashi = ev.type === 'EKADASHI';
+        const badgeColor = isEkadashi ? 'bg-amber-500/20 text-amber-300 border-amber-500/30' : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30';
+        const icon = isEkadashi ? 'fa-wheat-awn' : 'fa-sun';
+
+        return `
+          <div class="p-3 rounded-2xl bg-[#0e111a] border border-[#222738] hover:border-indigo-500/40 space-y-2 shadow transition">
+            <div class="flex items-start justify-between">
+              <div class="space-y-0.5 flex-1 pr-2">
+                <div class="flex items-center gap-1.5">
+                  <span class="text-[9px] px-2 py-0.2 rounded border font-mono font-bold ${badgeColor}">
+                    <i class="fa-solid ${icon} mr-1"></i> ${ev.type}
+                  </span>
+                  <span class="text-[9px] text-gray-400 font-mono">${ev.tithi}</span>
+                </div>
+                <h4 class="text-xs font-bold text-gray-100 pt-1">${ev.title}</h4>
+                <p class="text-[10px] text-gray-400 leading-relaxed">${ev.desc}</p>
+              </div>
+              <div class="text-right shrink-0">
+                <span class="text-xs font-mono font-bold text-amber-300 block">${ev.date}</span>
+                <button onclick="setEventReminder('${ev.title}')" class="mt-1 text-[10px] px-2 py-0.5 rounded bg-[#181d2c] border border-[#2b3348] text-indigo-300 hover:text-white">
+                  <i class="fa-solid fa-bell text-[8px]"></i> Remind
+                </button>
+              </div>
+            </div>
+            <div class="pt-1 border-t border-[#1a1f2e] flex items-center justify-between text-[9px] font-mono text-gray-300">
+              <span class="text-emerald-400 font-semibold"><i class="fa-solid fa-clock"></i> Parana / Break: ${ev.parana}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function setEventReminder(title) {
+      vibrateHaptic();
+      alert(`🔔 Fasting reminder saved for:\n"${title}"\n\nNotification set for morning of the fast.`);
+    }
+
+    // === 🪔 Ghee Lamp Offering Engine ===
+    function openLampModal() {
+      vibrateHaptic();
+      document.getElementById('lamp-modal').classList.remove('hidden');
+    }
+
+    function closeLampModal() {
+      document.getElementById('lamp-modal').classList.add('hidden');
+    }
+
+    function offerLampAndPlayDamodara() {
+      vibrateHaptic(50);
+      closeLampModal();
+      openSongbookModal();
+      switchSong('damodara');
+      alert('🪔 Ghee lamp successfully offered to Lord Damodara! Singing Damodarashtakam...');
     }
 
     // === In-App Live Auto-Updates Engine ===
@@ -2117,14 +2386,32 @@ html_content = r'''<!DOCTYPE html>
       damodara: {
         title: 'Sri Damodarashtakam (श्री दामोदराष्टकम्)',
         author: 'Satyavrata Muni (Padma Purana)',
-        lyrics: `namāmīśvaraṁ sac-cid-ānanda-rūpaṁ\nlasat-kuṇḍalaṁ gokule bhrājamānam\nyaśodā-bhiyolūkhalād dhāvamānaṁ\nparāmṛṣṭam atyantato drutya gopyā`,
+        lyrics: `namāmīśvaraṁ sac-cid-ānanda-rūpaṁ\nlasat-kuṇḍalaṁ gokule bhrājamānam\nyaśodā-bhiyolūkhalād dhāvamānaṁ\nparāmṛṣṭam atyantato drutya gopyā\n\nrudantaṁ muhur netra-yugmaṁ mṛjantam\nkarāmbhoja-yugmena sātaṅka-netram\nmuhuḥ śvāsa-kampa-tri-rekhāṅka-kaṇṭha-\nsthita-graiva-dāmodaraṁ bhakti-baddham`,
         translation: `To the supreme Lord, whose form is the embodiment of eternal existence, knowledge, and bliss, whose shark-shaped earrings oscillate, who is beautifully shining in Gokula, and who is fleeing from mother Yashoda in fear of the wooden grinding mortar... I offer my respectful obeisances.`
       },
+      tulasi: {
+        title: 'Sri Tulasi Pranama & Aarti (श्री तुलसी आरती)',
+        author: 'Srila Vrindavana Dasa Thakura',
+        lyrics: `vṛndāyai tulasī-devyai priyāyai keśavasya ca\nkṛṣṇa-bhakti-prade devi satyavatyai namo namaḥ\n\nnamo namaḥ tulasī kṛṣṇa-preyasi namo namaḥ\nrādhā-kṛṣṇa-sevā pābo ei abilāṣī\n\nyāni kāni ca pāpāni brahma-hatyādikāni ca\ntāni tāni praṇaśyanti pradakṣiṇaḥ pade pade`,
+        translation: `I offer my repeated obeisances unto Vrinda, Srimati Tulasi Devi, who is very dear to Lord Keshava. O goddess, you bestow devotional service unto Lord Krishna and possess the highest truth. Circumambulating Tulasi destroys all sinful reactions step by step.`
+      },
+      nrsimha: {
+        title: 'Sri Nrsimha Pranama & Kavaca (श्री नृसिंह प्रणाम)',
+        author: 'Sri Vyasadeva (Brahmanda Purana)',
+        lyrics: `namas te narasiṁhāya prahlādāhlāda-dāyine\npratyakṣa-vakṣaḥ-śilā-ṭaṅka-nakhālaye\n\nito nṛsiṁhaḥ parato nṛsiṁho\nyato yato yāmi tato nṛsiṁhaḥ\nbahir nṛsiṁho hṛdaye nṛsiṁho\nnṛsiṁham ādiṁ śaraṇaṁ prapadye`,
+        translation: `I offer my obeisances unto Lord Narasimha, who gives bliss to Prahlada Maharaja and whose nails are like chisels on the stonelike chest of the demon Hiranyakashipu. Lord Narasimha is here and also there. Wherever I go, Lord Narasimha is there. He is in the heart and outside as well.`
+      },
       guru_ashtaka: {
-        title: 'Sri Gurvastakam (श्री गुर्वाष्टकम्)',
+        title: 'Sri Gurvastakam - Mangala Aarti (श्री गुर्वाष्टकम्)',
         author: 'Srila Visvanatha Cakravarti Thakura',
-        lyrics: `saṁsāra-dāvānala-līḍha-loka-\ntrāṇāya kāruṇya-ghanāghanatvam\nprāptasya kalyāṇa-guṇārṇavasya\nvande guroḥ śrī-caraṇāravindam`,
+        lyrics: `saṁsāra-dāvānala-līḍha-loka-\ntrāṇāya kāruṇya-ghanāghanatvam\nprāptasya kalyāṇa-guṇārṇavasya\nvande guroḥ śrī-caraṇāravindam\n\nmahāprabhoḥ kīrtana-nṛtya-gīta-\nvāditra-mādyan-manaso rasena\nromāñca-kampāśru-taraṅga-bhājo\nvande guroḥ śrī-caraṇāravindam`,
         translation: `The spiritual master is receiving benediction from the ocean of mercy. Just as a cloud pours water on a forest fire to extinguish it, so the spiritual master delivers the materially afflicted world by extinguishing the blazing fire of material existence.`
+      },
+      shikshashtaka: {
+        title: 'Sri Shikshashtakam (श्री शिक्षाष्टकम्)',
+        author: 'Lord Sri Chaitanya Mahaprabhu',
+        lyrics: `ceto-darpaṇa-mārjanaṁ bhava-mahā-dāvāgni-nirvāpaṇaṁ\nśreyaḥ-kairava-candrikā-vitaraṇaṁ vidyā-vadhū-jīvanam\nānandāmbudhi-vardhanaṁ prati-padaṁ pūrṇāmṛtāsvādanaṁ\nsarvātma-snapanaṁ paraṁ vijayate śrī-kṛṣṇa-saṅkīrtanam\n\ntṛṇād api su-nīcena taror iva sahiṣṇunā\namāninā māna-dena kīrtanīyaḥ sadā hariḥ`,
+        translation: `Glory to the Sri Krishna Sankirtana, which cleanses the heart of all dust accumulated for years and extinguishes the fire of material life. One should chant the holy name of the Lord in a humble state of mind, thinking oneself lower than the straw in the street, more tolerant than a tree, devoid of all sense of false prestige.`
       },
       brahma_samhita: {
         title: 'Govindam - Brahma Samhita (5.1)',
