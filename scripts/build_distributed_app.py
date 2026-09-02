@@ -1,4 +1,6 @@
-<!DOCTYPE html>
+import os
+
+html_code = r'''<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -2613,3 +2615,9 @@
   </script>
 </body>
 </html>
+'''
+
+with open(os.path.join(os.path.dirname(__file__), '..', 'web-portal', 'index.html'), 'w', encoding='utf-8') as f:
+    f.write(html_code)
+
+print("Successfully written upgraded distributed web-portal/index.html")
