@@ -144,6 +144,22 @@ console.log('\nTest 7: Bhakti Shastri Memorization & Spaced Repetition')
 const testCard = { ref: 'BG 4.34', scores: { 'BG 4.34': 'good' } }
 assert(testCard.scores['BG 4.34'] === 'good', 'Spaced repetition state saved correctly')
 
+// === TEST 8: Vaishnava Songbook Database ===
+console.log('\nTest 8: Vaishnava Songbook & Prayers Database')
+const htmlContent = fs.readFileSync(path.join(__dirname, '..', 'web-portal', 'index.html'), 'utf8')
+assert(htmlContent.includes('Jaya Radha Madhava'), 'Jaya Radha Madhava prayer verified in songbook')
+assert(htmlContent.includes('Sri Damodarashtakam'), 'Sri Damodarashtakam prayer verified in songbook')
+
+// === TEST 9: Bhakti Shastri Chapter Quiz Engine ===
+console.log('\nTest 9: Bhakti Shastri Chapter Quiz Engine')
+assert(htmlContent.includes('quizQuestions'), 'Bhakti Shastri quiz questions configured')
+assert(htmlContent.includes('According to BG 4.34'), 'BG 4.34 assessment question verified')
+
+// === TEST 10: Word-by-Word Sanskrit Lexicon ===
+console.log('\nTest 10: Word-by-Word Sanskrit Lexicon (पदच्छेद)')
+assert(htmlContent.includes('wbwData'), 'Word-by-word Sanskrit lexicon configured')
+assert(htmlContent.includes('praṇipātena'), 'Sanskrit word-by-word breakdown verified')
+
 console.log('\n====================================================')
 console.log(`TEST RESULTS: ${passed} PASSED, ${failed} FAILED`)
 console.log('====================================================')

@@ -92,6 +92,12 @@
       </div>
     </div>
     <div class="flex items-center gap-1.5">
+      <button onclick="playRandomKatha()" class="p-2 rounded-xl bg-[#181d2c] border border-[#2b3348] text-[11px] text-rose-300 hover:border-rose-500 transition" title="🎲 Random Katha / Nectar of the Day">
+        <i class="fa-solid fa-dice"></i>
+      </button>
+      <button onclick="openSongbookModal()" class="p-2 rounded-xl bg-[#181d2c] border border-[#2b3348] text-[11px] text-sky-300 hover:border-sky-500 transition" title="📖 Vaishnava Songbook & Prayers">
+        <i class="fa-solid fa-book-open"></i>
+      </button>
       <button onclick="openSleepTimerModal()" class="p-2 rounded-xl bg-[#181d2c] border border-[#2b3348] text-[11px] text-indigo-300 hover:border-indigo-500 transition" title="Bedtime / Sleep Timer">
         <i class="fa-solid fa-moon"></i>
       </button>
@@ -207,6 +213,27 @@
         </div>
       </div>
 
+      <!-- Nectar of the Day & Quick Quiz Banner -->
+      <div class="grid grid-cols-2 gap-2">
+        <div onclick="playRandomKatha()" class="p-3 rounded-2xl bg-gradient-to-br from-indigo-900/40 to-[#121520] border border-indigo-500/30 cursor-pointer hover:border-indigo-400 transition shadow space-y-1">
+          <div class="flex items-center justify-between">
+            <span class="text-[10px] font-bold text-indigo-300 uppercase tracking-wider font-mono"><i class="fa-solid fa-sparkles text-amber-400"></i> Nectar Pick</span>
+            <i class="fa-solid fa-dice text-xs text-indigo-400"></i>
+          </div>
+          <p class="text-xs font-bold text-gray-100 line-clamp-1">Random Katha</p>
+          <p class="text-[9px] text-gray-400">Tap to play 1 of 957 talks</p>
+        </div>
+
+        <div onclick="openQuizModal()" class="p-3 rounded-2xl bg-gradient-to-br from-emerald-900/40 to-[#121520] border border-emerald-500/30 cursor-pointer hover:border-emerald-400 transition shadow space-y-1">
+          <div class="flex items-center justify-between">
+            <span class="text-[10px] font-bold text-emerald-300 uppercase tracking-wider font-mono"><i class="fa-solid fa-graduation-cap text-amber-400"></i> Gita Quiz</span>
+            <i class="fa-solid fa-arrow-right text-xs text-emerald-400"></i>
+          </div>
+          <p class="text-xs font-bold text-gray-100 line-clamp-1">Chapter Test</p>
+          <p class="text-[9px] text-gray-400">Test your Gita purports</p>
+        </div>
+      </div>
+
       <!-- Continue Listening / Recent History -->
       <div class="space-y-2">
         <div class="flex items-center justify-between px-1">
@@ -280,6 +307,22 @@
 
     <!-- ================= TAB 4: OFFLINE VAULT VIEW ================= -->
     <section id="view-offline" class="space-y-3 hidden">
+      <div class="p-3.5 rounded-2xl bg-[#121520] border border-[#222738] space-y-2 shadow">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <i class="fa-solid fa-hard-drive text-indigo-400 text-sm"></i>
+            <span class="text-xs font-bold text-gray-100">Offline Audio Storage</span>
+          </div>
+          <button onclick="clearAllOfflineCache()" class="text-[10px] text-rose-400 hover:text-rose-300 font-semibold flex items-center gap-1">
+            <i class="fa-solid fa-trash-can"></i> Clear All
+          </button>
+        </div>
+        <div class="flex items-center justify-between text-[10px] text-gray-400 font-mono">
+          <span id="offline-storage-used">Used: 0.0 MB</span>
+          <span id="offline-view-count-badge">0 Tracks Cached</span>
+        </div>
+      </div>
+
       <div class="flex items-center justify-between px-1">
         <span class="text-xs font-bold text-gray-200">Offline Vault (<span id="offline-view-count">0</span>)</span>
         <span class="text-[10px] text-emerald-400 font-semibold"><i class="fa-solid fa-check"></i> Playable Without Internet</span>
@@ -345,6 +388,15 @@
             🌟 Easy (7d)
           </button>
         </div>
+      </div>
+
+      <!-- Word-by-Word Sanskrit Breakdown Toggle -->
+      <div class="p-3 rounded-2xl bg-[#121520] border border-[#222738] space-y-2">
+        <button onclick="toggleWordByWord()" class="w-full flex items-center justify-between text-xs font-bold text-gray-200">
+          <span class="flex items-center gap-1.5"><i class="fa-solid fa-spell-check text-indigo-400"></i> Word-by-Word Synonyms (पदच्छेद)</span>
+          <i id="wbw-toggle-icon" class="fa-solid fa-chevron-down text-[10px] text-gray-400"></i>
+        </button>
+        <div id="card-wbw-container" class="hidden text-[11px] text-gray-300 font-mono space-y-1.5 pt-1 border-t border-[#222738]"></div>
       </div>
     </section>
   </main>
@@ -603,6 +655,47 @@
     </div>
   </div>
 
+  <!-- Vaishnava Songbook & Prayers Modal Dialog -->
+  <div id="songbook-modal" class="fixed inset-0 bg-black/85 z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-[#141824] border border-[#2a3248] rounded-2xl max-w-md w-full p-4 space-y-3 shadow-2xl animate-slideUp max-h-[85vh] flex flex-col">
+      <div class="flex items-center justify-between border-b border-[#232838] pb-2">
+        <h3 class="text-xs font-bold text-sky-300 flex items-center gap-1.5">
+          <i class="fa-solid fa-book-open"></i>
+          <span>Vaishnava Songbook & Prayers</span>
+        </h3>
+        <button onclick="closeSongbookModal()" class="text-gray-400 hover:text-white text-xs p-1"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none text-[10px]" id="songbook-tabs">
+        <button onclick="switchSong('radha_madhava')" class="px-2.5 py-1 rounded-full bg-indigo-600 text-white font-bold whitespace-nowrap song-tab" data-song="radha_madhava">Jaya Radha Madhava</button>
+        <button onclick="switchSong('damodara')" class="px-2.5 py-1 rounded-full bg-[#0e111a] text-gray-400 border border-[#222738] whitespace-nowrap song-tab" data-song="damodara">Damodarashtakam</button>
+        <button onclick="switchSong('guru_ashtaka')" class="px-2.5 py-1 rounded-full bg-[#0e111a] text-gray-400 border border-[#222738] whitespace-nowrap song-tab" data-song="guru_ashtaka">Sri Gurvastakam</button>
+        <button onclick="switchSong('brahma_samhita')" class="px-2.5 py-1 rounded-full bg-[#0e111a] text-gray-400 border border-[#222738] whitespace-nowrap song-tab" data-song="brahma_samhita">Govindam (BS 5.1)</button>
+      </div>
+      <div id="songbook-content" class="overflow-y-auto space-y-2 text-xs text-gray-200 leading-relaxed font-serif p-2 rounded-xl bg-[#0d1017] border border-[#222738] flex-1"></div>
+    </div>
+  </div>
+
+  <!-- Bhakti Shastri Assessment / Quiz Modal Dialog -->
+  <div id="quiz-modal" class="fixed inset-0 bg-black/85 z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-[#141824] border border-[#2a3248] rounded-2xl max-w-md w-full p-4 space-y-3 shadow-2xl animate-slideUp">
+      <div class="flex items-center justify-between border-b border-[#232838] pb-2">
+        <h3 class="text-xs font-bold text-emerald-300 flex items-center gap-1.5">
+          <i class="fa-solid fa-graduation-cap"></i>
+          <span>Bhakti Shastri Bhagavad Gita Quiz</span>
+        </h3>
+        <button onclick="closeQuizModal()" class="text-gray-400 hover:text-white text-xs p-1"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div id="quiz-container" class="space-y-3">
+        <div class="flex justify-between text-[10px] text-gray-400 font-mono">
+          <span id="quiz-q-num">Question 1 of 5</span>
+          <span id="quiz-score-badge">Score: 0</span>
+        </div>
+        <p id="quiz-question-text" class="text-xs font-bold text-gray-100">Question text goes here...</p>
+        <div id="quiz-options-list" class="space-y-2"></div>
+      </div>
+    </div>
+  </div>
+
   <!-- Edit Profile Modal Dialog -->
   <div id="profile-modal" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-[#141824] border border-[#2a3248] rounded-2xl max-w-sm w-full p-4 space-y-3 shadow-2xl animate-slideUp">
@@ -758,9 +851,18 @@
       const req = tx.objectStore('audio_cache').getAll();
       req.onsuccess = () => {
         offlineTrackMap.clear();
-        (req.result || []).forEach(item => offlineTrackMap.set(item.id, item));
+        let totalBytes = 0;
+        (req.result || []).forEach(item => {
+          offlineTrackMap.set(item.id, item);
+          if (item.blob && item.blob.size) totalBytes += item.blob.size;
+        });
         const count = offlineTrackMap.size;
         document.getElementById('offline-view-count').textContent = count;
+        const countBadge = document.getElementById('offline-view-count-badge');
+        if (countBadge) countBadge.textContent = `${count} Tracks Cached`;
+        const mbUsed = (totalBytes / (1024 * 1024)).toFixed(1);
+        const usedEl = document.getElementById('offline-storage-used');
+        if (usedEl) usedEl.textContent = `Used: ${mbUsed} MB`;
         renderOfflineTracks();
       };
     }
@@ -1993,6 +2095,275 @@
           else playPrev();
         }
       }
+    }
+
+    // === Random Katha / Nectar of the Day Picker ===
+    function playRandomKatha() {
+      vibrateHaptic();
+      if (!allTracks || allTracks.length === 0) return;
+      const randomIdx = Math.floor(Math.random() * allTracks.length);
+      const chosen = allTracks[randomIdx];
+      playSingleTrack(chosen.id);
+      openFullPlayerModal();
+    }
+
+    // === Vaishnava Songbook Engine ===
+    const songbookDB = {
+      radha_madhava: {
+        title: 'Jaya Radha Madhava (जय राधा माधव)',
+        author: 'Srila Bhaktivinoda Thakura',
+        lyrics: `jaya rādhā-mādhava jaya kuñja-bihārī
+jaya gopī-jana-vallabha jaya giri-vara-dhārī
+yaśodā-nandana, braja-jana-rañjana,
+yāmuna-tīra-vana-cārī`,
+        translation: `Krishna is the lover of Radha. He displays many amorous pastimes in the groves of Vrindavana. He is the lover of the cowherd maidens of Vraja, the holder of the great hill named Govardhana, the beloved son of mother Yashoda, the delighter of the inhabitants of Vraja, and He wanders in the forests along the banks of the River Yamuna.`
+      },
+      damodara: {
+        title: 'Sri Damodarashtakam (श्री दा मोदराष्टकम्)',
+        author: 'Satyavrata Muni (Padma Purana)',
+        lyrics: `namāmīśvaraṁ sac-cid-ānanda-rūpaṁ
+lasat-kuṇḍalaṁ gokule bhrājamānam
+yaśodā-bhiyolūkhalād dhāvamānaṁ
+parāmṛṣṭam atyantato drutya gopyā`,
+        translation: `To the supreme Lord, whose form is the embodiment of eternal existence, knowledge, and bliss, whose shark-shaped earrings oscillate, who is beautifully shining in Gokula, and who is fleeing from mother Yashoda in fear of the wooden grinding mortar... I offer my respectful obeisances.`
+      },
+      guru_ashtaka: {
+        title: 'Sri Gurvastakam (श्री गुर्वाष्टकम्)',
+        author: 'Srila Visvanatha Cakravarti Thakura',
+        lyrics: `saṁsāra-dāvānala-līḍha-loka-
+trāṇāya kāruṇya-ghanāghanatvam
+prāptasya kalyāṇa-guṇārṇavasya
+vande guroḥ śrī-caraṇāravindam`,
+        translation: `The spiritual master is receiving benediction from the ocean of mercy. Just as a cloud pours water on a forest fire to extinguish it, so the spiritual master delivers the materially afflicted world by extinguishing the blazing fire of material existence.`
+      },
+      brahma_samhita: {
+        title: 'Govindam - Brahma Samhita (5.1)',
+        author: 'Lord Brahma',
+        lyrics: `īśvaraḥ paramaḥ kṛṣṇaḥ sac-cid-ānanda-vigrahaḥ
+anādir ādir govindaḥ sarva-kāraṇa-kāraṇam`,
+        translation: `Krishna who is known as Govinda is the Supreme Godhead. He has an eternal blissful spiritual body. He is the origin of all. He has no other origin and He is the prime cause of all causes.`
+      }
+    };
+
+    function openSongbookModal() {
+      vibrateHaptic();
+      switchSong('radha_madhava');
+      document.getElementById('songbook-modal').classList.remove('hidden');
+    }
+
+    function closeSongbookModal() {
+      document.getElementById('songbook-modal').classList.add('hidden');
+    }
+
+    function switchSong(key) {
+      vibrateHaptic();
+      const s = songbookDB[key];
+      if (!s) return;
+      document.querySelectorAll('.song-tab').forEach(t => {
+        if (t.getAttribute('data-song') === key) {
+          t.className = 'px-2.5 py-1 rounded-full bg-indigo-600 text-white font-bold whitespace-nowrap song-tab';
+        } else {
+          t.className = 'px-2.5 py-1 rounded-full bg-[#0e111a] text-gray-400 border border-[#222738] whitespace-nowrap song-tab';
+        }
+      });
+      document.getElementById('songbook-content').innerHTML = `
+        <h4 class="text-xs font-bold text-amber-300 font-sans">${s.title}</h4>
+        <p class="text-[9px] text-gray-400 font-sans pb-1">Composed by ${s.author}</p>
+        <div class="p-2.5 rounded-lg bg-[#080a0f] border border-[#1d2230] text-amber-100 font-serif whitespace-pre-line">${s.lyrics}</div>
+        <p class="text-[11px] text-gray-300 leading-relaxed font-sans pt-1"><strong>Translation:</strong> ${s.translation}</p>
+      `;
+    }
+
+    // === Bhakti Shastri Chapter Quiz Engine ===
+    const quizQuestions = [
+      {
+        q: "According to BG 4.34, what is the threefold qualification of a disciple?",
+        options: [
+          "Money, Prestige, and Scholarship",
+          "Praṇipāta (Surrender), Paripraśna (Inquiry), and Sevā (Service)",
+          "Physical strength, Austerity, and Silence",
+          "Renunciation of work, Forest dwelling, and Fasting"
+        ],
+        correct: 1,
+        explanation: "BG 4.34: tad viddhi praṇipātena paripraśnena sevayā - One must surrender, inquire submissively, and render menial service."
+      },
+      {
+        q: "What does BG 2.13 prove regarding the nature of the spirit soul?",
+        options: [
+          "The soul dies when the physical body dies",
+          "The soul mutates with age from youth to old age",
+          "The soul is immutable and transitions between bodies like changing clothes",
+          "The body is eternal and the soul is temporary"
+        ],
+        correct: 2,
+        explanation: "BG 2.13: Just as the soul passes from boyhood to youth to old age, it passes into another body at death."
+      },
+      {
+        q: "Why is devotional service called 'Pratyakṣāvagamaṁ' in BG 9.2?",
+        options: [
+          "Because it relies on blind mechanical dogma",
+          "Because it yields direct, experiential personal perception and self-realization",
+          "Because it is only theoretical philosophy",
+          "Because it is difficult to perform"
+        ],
+        correct: 1,
+        explanation: "BG 9.2: pratyakṣāvagamaṁ dharmyaṁ su-sukham - It gives direct perception of truth by personal realization."
+      },
+      {
+        q: "What is the ultimate confidential conclusion of the entire Bhagavad Gita in BG 18.66?",
+        options: [
+          "Perform karma-kanda sacrifices forever",
+          "Merge into the impersonal Brahman",
+          "Abandon all varieties of religion and surrender exclusively unto Krishna (Śaraṇāgati)",
+          "Perform silent solitary meditation without service"
+        ],
+        correct: 2,
+        explanation: "BG 18.66: sarva-dharmān parityajya mām ekaṁ śaraṇaṁ vraja - The pinnacle of Vedic revelation is pure devotional surrender."
+      },
+      {
+        q: "According to Sri Upadesamrita (Verse 1), what must a Goswami control?",
+        options: [
+          "The 6 urges: speech, mind, anger, tongue, belly, and genitals",
+          "The 3 planetary systems",
+          "Only dietary habits",
+          "Only academic debate skills"
+        ],
+        correct: 0,
+        explanation: "NOI Verse 1: vāco vegaṁ manasaḥ krodha-vegaṁ... A sober person who controls these 6 urges is qualified to instruct the entire world."
+      }
+    ];
+
+    let quizCurrentIdx = 0;
+    let quizScore = 0;
+
+    function openQuizModal() {
+      vibrateHaptic();
+      quizCurrentIdx = 0;
+      quizScore = 0;
+      renderQuizQuestion();
+      document.getElementById('quiz-modal').classList.remove('hidden');
+    }
+
+    function closeQuizModal() {
+      document.getElementById('quiz-modal').classList.add('hidden');
+    }
+
+    function renderQuizQuestion() {
+      if (quizCurrentIdx >= quizQuestions.length) {
+        document.getElementById('quiz-container').innerHTML = `
+          <div class="text-center space-y-3 py-4">
+            <div class="w-12 h-12 mx-auto rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xl font-bold">
+              <i class="fa-solid fa-trophy"></i>
+            </div>
+            <h4 class="text-sm font-bold text-gray-100">Quiz Completed!</h4>
+            <p class="text-xs text-emerald-300 font-mono font-bold">Your Score: ${quizScore} / ${quizQuestions.length}</p>
+            <p class="text-[11px] text-gray-400">${quizScore === 5 ? '🌟 Outstanding mastery of Gita purports!' : 'Keep hearing Dr. Behera Sir\'s lectures to deepen your purports!'}</p>
+            <button onclick="openQuizModal()" class="px-4 py-2 rounded-xl bg-indigo-600 text-white text-xs font-bold shadow">
+              Retake Quiz
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      const q = quizQuestions[quizCurrentIdx];
+      document.getElementById('quiz-q-num').textContent = `Question ${quizCurrentIdx + 1} of ${quizQuestions.length}`;
+      document.getElementById('quiz-score-badge').textContent = `Score: ${quizScore}`;
+      document.getElementById('quiz-question-text').textContent = q.q;
+
+      document.getElementById('quiz-options-list').innerHTML = q.options.map((opt, idx) => `
+        <button onclick="selectQuizAnswer(${idx})" class="w-full text-left p-2.5 rounded-xl bg-[#0e111a] border border-[#222738] hover:border-indigo-500 text-xs text-gray-200 transition">
+          <span class="font-bold text-indigo-400 mr-1.5 font-mono">${String.fromCharCode(65 + idx)}.</span> ${opt}
+        </button>
+      `).join('');
+    }
+
+    function selectQuizAnswer(idx) {
+      vibrateHaptic();
+      const q = quizQuestions[quizCurrentIdx];
+      if (idx === q.correct) {
+        quizScore++;
+        alert(`✓ Correct!\\n\\n${q.explanation}`);
+      } else {
+        alert(`✗ Incorrect.\\n\\nCorrect Answer: ${q.options[q.correct]}\\n\\n${q.explanation}`);
+      }
+      quizCurrentIdx++;
+      renderQuizQuestion();
+    }
+
+    // === Word-by-Word Sanskrit Table ===
+    const wbwData = {
+      "BG 4.34": [
+        ["tat", "that knowledge of different sacrifices"],
+        ["viddhi", "try to understand"],
+        ["praṇipātena", "by approaching a spiritual master"],
+        ["paripraśnena", "by submissive inquiries"],
+        ["sevayā", "by the rendering of service"],
+        ["upadekṣyanti", "they will initiate/impart"],
+        ["te", "unto you"],
+        ["jñānam", "knowledge"],
+        ["jñāninaḥ", "the self-realized"],
+        ["tattva", "of the truth"],
+        ["darśinaḥ", "the seers"]
+      ],
+      "BG 2.13": [
+        ["dehinaḥ", "of the embodied"],
+        ["asmin", "in this"],
+        ["yathā", "as"],
+        ["dehe", "in the body"],
+        ["kaumāram", "boyhood"],
+        ["yauvanam", "youth"],
+        ["jarā", "old age"],
+        ["tathā", "similarly"],
+        ["dehāntara", "of another body"],
+        ["prāptiḥ", "achievement"],
+        ["dhīraḥ", "the sober"],
+        ["tatra", "thereupon"],
+        ["na", "never"],
+        ["muhyati", "is deluded"]
+      ]
+    };
+
+    function toggleWordByWord() {
+      vibrateHaptic();
+      const cont = document.getElementById('card-wbw-container');
+      const icon = document.getElementById('wbw-toggle-icon');
+      const card = coreShlokas[currentFlashcardIdx];
+      if (!cont) return;
+
+      if (cont.classList.contains('hidden')) {
+        cont.classList.remove('hidden');
+        if (icon) icon.className = 'fa-solid fa-chevron-up text-[10px] text-indigo-400';
+        const data = wbwData[card.ref] || [["पद", "Word"], ["अर्थ", "Meaning"]];
+        cont.innerHTML = data.map(([w, m]) => `
+          <div class="flex justify-between border-b border-[#1d2230] pb-0.5">
+            <span class="text-amber-300 font-bold">${w}</span>
+            <span class="text-gray-300 text-right">${m}</span>
+          </div>
+        `).join('');
+      } else {
+        cont.classList.add('hidden');
+        if (icon) icon.className = 'fa-solid fa-chevron-down text-[10px] text-gray-400';
+      }
+    }
+
+    // === Clear All Offline Storage ===
+    function clearAllOfflineCache() {
+      vibrateHaptic();
+      if (!confirm('Are you sure you want to clear all downloaded offline audio?')) return;
+      if (!db) return;
+      const tx = db.transaction('audio_cache', 'readwrite');
+      tx.objectStore('audio_cache').clear();
+      tx.oncomplete = () => {
+        offlineTrackMap.clear();
+        document.getElementById('offline-view-count').textContent = '0';
+        const badge = document.getElementById('offline-view-count-badge');
+        if (badge) badge.textContent = '0 Tracks Cached';
+        const usedEl = document.getElementById('offline-storage-used');
+        if (usedEl) usedEl.textContent = 'Used: 0.0 MB';
+        renderOfflineTracks();
+        alert('✓ Offline cache cleared successfully.');
+      };
     }
 
     async function initApp() {
