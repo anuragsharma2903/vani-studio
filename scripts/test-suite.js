@@ -160,6 +160,27 @@ console.log('\nTest 10: Word-by-Word Sanskrit Lexicon (पदच्छेद)')
 assert(htmlContent.includes('wbwData'), 'Word-by-word Sanskrit lexicon configured')
 assert(htmlContent.includes('praṇipātena'), 'Sanskrit word-by-word breakdown verified')
 
+// === TEST 11: 🤖 Vani AI Groq Intelligence Engine ===
+console.log('\nTest 11: 🤖 Vani AI Assistant & Groq Engine')
+assert(htmlContent.includes('vani-ai-modal'), 'Vani AI Modal configured')
+assert(htmlContent.includes('llama-3.3-70b-versatile'), 'LLaMA 3.3 70B model target verified')
+assert(htmlContent.includes('askAIPreset'), 'Quick prompt chips configured')
+
+// === TEST 12: 📿 Japa Mala Sadhana Counter ===
+console.log('\nTest 12: 📿 Japa Mala Sadhana Counter & Rounds')
+assert(htmlContent.includes('japa-modal'), 'Japa Mala Modal configured')
+assert(htmlContent.includes('108 Beads'), '108 Beads counter verified')
+assert(htmlContent.includes('हरे कृष्ण हरे कृष्ण'), 'Mahamantra chanting header verified')
+
+// === TEST 13: 🎙️ Voice Search (Web Speech API) ===
+console.log('\nTest 13: 🎙️ Voice Search Speech Recognition')
+assert(htmlContent.includes('startVoiceSearch'), 'Voice search handler configured')
+
+// === TEST 14: 📅 Vaishnava Fasting & Festival Calendar ===
+console.log('\nTest 14: 📅 Vaishnava Fasting & Festival Calendar')
+assert(htmlContent.includes('calendar-modal'), 'Calendar Modal configured')
+assert(htmlContent.includes('Parivartini Ekadashi'), 'Ekadashi fasting dates verified')
+
 console.log('\n====================================================')
 console.log(`TEST RESULTS: ${passed} PASSED, ${failed} FAILED`)
 console.log('====================================================')
