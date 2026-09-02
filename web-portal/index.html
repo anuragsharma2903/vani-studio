@@ -30,6 +30,11 @@
       from { transform: translateY(100%); opacity: 0; }
       to { transform: translateY(0); opacity: 1; }
     }
+    .flashcard-flip { perspective: 1000px; }
+    .flashcard-inner { transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1); transform-style: preserve-3d; }
+    .flashcard-flipped .flashcard-inner { transform: rotateY(180deg); }
+    .flashcard-front, .flashcard-back { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+    .flashcard-back { transform: rotateY(180deg); }
   </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between select-none">
@@ -47,7 +52,10 @@
         <p class="text-[10px] text-gray-400 truncate max-w-[200px]">Dr. Laxmidhar Behera (HG Lila Purushottam Das)</p>
       </div>
     </div>
-    <div class="flex items-center gap-2">
+    <div class="flex items-center gap-1.5">
+      <button onclick="switchTab('flashcards')" class="p-2 rounded-xl bg-[#181d2c] border border-[#2b3348] text-[11px] text-amber-300 hover:border-amber-500 transition" title="Bhakti Shastri Shloka Memorization">
+        <i class="fa-solid fa-graduation-cap"></i>
+      </button>
       <button onclick="switchTab('dashboard')" class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#181d2c] border border-[#2b3348] text-[11px] text-gray-200 hover:border-indigo-500 transition">
         <div class="w-4 h-4 rounded-full bg-indigo-600 flex items-center justify-center text-[9px] text-white font-bold" id="header-avatar">D</div>
         <span id="header-user-name" class="font-medium text-xs truncate max-w-[80px]">Devotee</span>
@@ -108,18 +116,22 @@
         </div>
 
         <!-- Listening Stats Badges -->
-        <div class="grid grid-cols-3 gap-2 pt-2 border-t border-[#232838] text-center">
+        <div class="grid grid-cols-4 gap-1.5 pt-2 border-t border-[#232838] text-center">
           <div class="p-2 rounded-xl bg-[#121520] border border-[#222738]">
             <p id="stat-listened-count" class="text-xs font-bold text-indigo-400 font-mono">0</p>
-            <p class="text-[9px] text-gray-400">Lectures Played</p>
+            <p class="text-[8px] text-gray-400 uppercase">Played</p>
           </div>
           <div class="p-2 rounded-xl bg-[#121520] border border-[#222738]">
             <p id="stat-notes-count" class="text-xs font-bold text-amber-400 font-mono">0</p>
-            <p class="text-[9px] text-gray-400">Study Notes</p>
+            <p class="text-[8px] text-gray-400 uppercase">Notes</p>
           </div>
           <div class="p-2 rounded-xl bg-[#121520] border border-[#222738]">
             <p id="stat-favs-count" class="text-xs font-bold text-rose-400 font-mono">0</p>
-            <p class="text-[9px] text-gray-400">Favorites</p>
+            <p class="text-[8px] text-gray-400 uppercase">Favs</p>
+          </div>
+          <div class="p-2 rounded-xl bg-[#121520] border border-[#222738]">
+            <p id="stat-shlokas-mastered" class="text-xs font-bold text-emerald-400 font-mono">0</p>
+            <p class="text-[8px] text-gray-400 uppercase">Verses</p>
           </div>
         </div>
       </div>
@@ -145,7 +157,14 @@
             <i class="fa-solid fa-book-bookmark text-amber-400"></i>
             <span>My Study Notes & Insights</span>
           </h3>
-          <button onclick="exportNotes()" class="text-[10px] text-indigo-400 hover:text-indigo-300 font-semibold"><i class="fa-solid fa-file-arrow-down"></i> Export</button>
+          <div class="flex items-center gap-2">
+            <button onclick="printOrExportNotesPDF()" class="text-[10px] text-amber-400 hover:text-amber-300 font-semibold flex items-center gap-1">
+              <i class="fa-solid fa-print"></i> Print / PDF
+            </button>
+            <button onclick="exportNotes()" class="text-[10px] text-indigo-400 hover:text-indigo-300 font-semibold flex items-center gap-1">
+              <i class="fa-solid fa-file-arrow-down"></i> .MD
+            </button>
+          </div>
         </div>
         <div id="notes-container" class="space-y-2">
           <div class="p-4 text-center text-xs text-gray-500 bg-[#121520] rounded-xl border border-[#222738]">No notes taken yet. While listening, click "📝 Take Notes" to save insights!</div>
@@ -195,6 +214,67 @@
         <span class="text-[10px] text-emerald-400 font-semibold"><i class="fa-solid fa-check"></i> Playable Without Internet</span>
       </div>
       <div id="offline-track-list" class="space-y-2.5"></div>
+    </section>
+
+    <!-- ================= TAB 5: BHAKTI SHASTRI FLASHCARDS ================= -->
+    <section id="view-flashcards" class="space-y-4 hidden">
+      <div class="flex items-center justify-between px-1">
+        <div>
+          <h3 class="text-xs font-bold text-gray-100 flex items-center gap-1.5">
+            <i class="fa-solid fa-graduation-cap text-amber-400"></i>
+            <span>Bhakti Shastri Memorization</span>
+          </h3>
+          <p class="text-[10px] text-gray-400">Spaced repetition flashcards for core verses</p>
+        </div>
+        <span id="flashcard-progress-badge" class="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 font-bold">1 / 7</span>
+      </div>
+
+      <!-- Flashcard Active Container -->
+      <div id="flashcard-container" class="flashcard-flip cursor-pointer" onclick="flipFlashcard()">
+        <div class="flashcard-inner relative w-full min-h-[280px] rounded-2xl bg-gradient-to-br from-[#161a28] to-[#10131f] border border-[#262c3e] p-5 shadow-2xl flex flex-col justify-between">
+          
+          <!-- Front Face (Sanskrit & Shloka Ref) -->
+          <div class="flashcard-front space-y-3 text-center my-auto">
+            <div class="inline-block px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-300 text-[10px] font-bold font-mono border border-amber-500/20" id="card-ref">
+              BG 4.34
+            </div>
+            <h4 class="text-sm font-bold text-amber-100 leading-relaxed font-serif" id="card-sanskrit">
+              tad viddhi praṇipātena paripraśnena sevayā |<br/>
+              upadekṣyanti te jñānaṁ jñāninas tattva-darśinaḥ ||
+            </h4>
+            <p class="text-[10px] text-gray-400 italic pt-2">Tap card to flip for translation & key purports</p>
+          </div>
+
+          <!-- Back Face (Translation & Purport Concept) -->
+          <div class="flashcard-back space-y-3 text-center my-auto">
+            <div class="inline-block px-2.5 py-0.5 rounded-full bg-indigo-500/10 text-indigo-300 text-[10px] font-bold font-mono border border-indigo-500/20" id="card-ref-back">
+              BG 4.34 • Translation
+            </div>
+            <p class="text-xs text-gray-200 leading-relaxed" id="card-translation">
+              Just try to learn the truth by approaching a spiritual master. Inquire from him submissively and render service unto him. The self-realized souls can impart knowledge unto you because they have seen the truth.
+            </p>
+            <div class="p-2 rounded-xl bg-[#0d1017] border border-[#222738] text-[10px] text-amber-300 text-left">
+              <strong>Key Takeaway:</strong> <span id="card-takeaway">Threefold qualification of a disciple: praṇipāta (surrender), paripraśna (submissive inquiry), sevā (service).</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Spaced Repetition Rating Buttons -->
+      <div class="space-y-2 pt-1">
+        <p class="text-center text-[10px] text-gray-400">Rate your recall memory:</p>
+        <div class="grid grid-cols-3 gap-2">
+          <button onclick="rateFlashcard('hard')" class="py-2.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 hover:bg-rose-500 hover:text-white text-xs font-bold transition">
+            😓 Hard (1d)
+          </button>
+          <button onclick="rateFlashcard('good')" class="py-2.5 rounded-xl bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 hover:bg-indigo-600 hover:text-white text-xs font-bold transition">
+            👍 Good (3d)
+          </button>
+          <button onclick="rateFlashcard('easy')" class="py-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500 hover:text-white text-xs font-bold transition">
+            🌟 Easy (7d)
+          </button>
+        </div>
+      </div>
     </section>
   </main>
 
@@ -264,6 +344,9 @@
         <p id="full-playlist-name" class="text-xs font-bold text-gray-200 truncate max-w-[180px]">Discourse</p>
       </div>
       <div class="flex items-center gap-1.5">
+        <button onclick="generateQuoteCardFromCurrent()" class="text-gray-400 hover:text-amber-400 p-1.5 text-xs" title="Generate Devotee Quote Card">
+          <i class="fa-solid fa-quote-left text-base"></i>
+        </button>
         <button onclick="openNoteModalForCurrent()" class="text-gray-400 hover:text-amber-400 p-1.5 text-xs" title="Take Study Notes">
           <i class="fa-solid fa-pen-nib text-base"></i>
         </button>
@@ -330,9 +413,41 @@
         <p id="note-lecture-title" class="text-[11px] font-semibold text-indigo-300 truncate">Lecture Title</p>
         <textarea id="note-text-input" rows="4" placeholder="Write your reflections, shloka meanings, key philosophical points..." class="w-full bg-[#0d1017] border border-[#232838] rounded-xl p-2.5 text-xs text-gray-100 placeholder-gray-500 focus:outline-none focus:border-indigo-500"></textarea>
       </div>
-      <div class="flex justify-end gap-2 pt-1">
-        <button onclick="closeNoteModal()" class="px-3 py-1.5 rounded-lg bg-[#1c2232] text-xs text-gray-300">Cancel</button>
-        <button onclick="saveNote()" class="px-4 py-1.5 rounded-lg bg-indigo-600 text-xs text-white font-bold shadow">Save Note</button>
+      <div class="flex justify-between items-center pt-1">
+        <button onclick="generateQuoteCardFromNote()" class="text-[11px] text-amber-400 hover:text-amber-300 font-semibold flex items-center gap-1">
+          <i class="fa-solid fa-image"></i> Create Quote Card
+        </button>
+        <div class="flex gap-2">
+          <button onclick="closeNoteModal()" class="px-3 py-1.5 rounded-lg bg-[#1c2232] text-xs text-gray-300">Cancel</button>
+          <button onclick="saveNote()" class="px-4 py-1.5 rounded-lg bg-indigo-600 text-xs text-white font-bold shadow">Save Note</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quote Card Share Modal Dialog -->
+  <div id="quote-card-modal" class="fixed inset-0 bg-black/85 z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-[#141824] border border-[#2a3248] rounded-2xl max-w-sm w-full p-4 space-y-3 shadow-2xl animate-slideUp text-center">
+      <div class="flex items-center justify-between border-b border-[#232838] pb-2 text-left">
+        <h3 class="text-xs font-bold text-amber-300 flex items-center gap-1.5">
+          <i class="fa-solid fa-quote-left"></i>
+          <span>Devotee Wisdom Quote Card</span>
+        </h3>
+        <button onclick="closeQuoteCardModal()" class="text-gray-400 hover:text-white text-xs p-1"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      
+      <!-- Canvas Preview Container -->
+      <div class="overflow-hidden rounded-xl border border-[#222738] shadow-lg flex justify-center bg-black">
+        <canvas id="quote-card-canvas" width="600" height="600" class="max-w-full h-auto rounded-xl"></canvas>
+      </div>
+
+      <div class="flex gap-2 pt-1">
+        <button onclick="downloadQuoteCardImage()" class="flex-1 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow">
+          <i class="fa-solid fa-download"></i> Download Image
+        </button>
+        <button onclick="shareQuoteCardWhatsApp()" class="flex-1 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow">
+          <i class="fa-brands fa-whatsapp"></i> Share WhatsApp
+        </button>
       </div>
     </div>
   </div>
@@ -382,6 +497,55 @@
     let ytPlayer = null;
     let currentTrack = null;
     let searchDebounceTimer = null;
+
+    // === Core Bhakti Shastri & Upadesamrita Flashcards Database ===
+    const coreShlokas = [
+      {
+        ref: "BG 4.34",
+        sanskrit: "tad viddhi praṇipātena paripraśnena sevayā |\nupadekṣyanti te jñānaṁ jñāninas tattva-darśinaḥ ||",
+        translation: "Just try to learn the truth by approaching a spiritual master. Inquire from him submissively and render service unto him. The self-realized souls can impart knowledge unto you because they have seen the truth.",
+        takeaway: "Threefold qualification of a sincere disciple: Praṇipāta (surrender), Paripraśna (submissive inquiry), and Sevā (service)."
+      },
+      {
+        ref: "BG 2.13",
+        sanskrit: "dehino 'smin yathā dehe kaumāraṁ yauvanaṁ jarā |\ntathā dehāntara-prāptir dhīras tatra na muhyati ||",
+        translation: "As the embodied soul continuously passes, in this body, from boyhood to youth to old age, the soul similarly passes into another body at death. A sober person is not bewildered by such a change.",
+        takeaway: "Fundamental proof of the eternal soul (Atman) distinct from the mutating material body."
+      },
+      {
+        ref: "BG 9.2",
+        sanskrit: "rāja-vidyā rāja-guhyaṁ pavitram idam uttamam |\npratyakṣāvagamaṁ dharmyaṁ su-sukhaṁ kartum avyayam ||",
+        translation: "This knowledge is the king of education, the most secret of all secrets. It is the purest knowledge, and because it gives direct perception of the self by realization, it is the perfection of religion.",
+        takeaway: "Pratyakṣāvagama: Pure devotional service yields direct personal realization and joy (su-sukham)."
+      },
+      {
+        ref: "BG 18.66",
+        sanskrit: "sarva-dharmān parityajya mām ekaṁ śaraṇaṁ vraja |\nahaṁ tvāṁ sarva-pāpebhyo mokṣayiṣyāmi mā śucaḥ ||",
+        translation: "Abandon all varieties of religion and just surrender unto Me. I shall deliver you from all sinful reactions. Do not fear.",
+        takeaway: "The ultimate confidential conclusion of the entire Bhagavad Gita: Unconditional surrender (Śaraṇāgati)."
+      },
+      {
+        ref: "NOI Verse 1",
+        sanskrit: "vāco vegaṁ manasaḥ krodha-vegaṁ\njihvā-vegam udaropastha-vegam |\netān vegān yo viṣaheta dhīraḥ\nsarvām apīmāṁ pṛthivīṁ sa śiṣyāt ||",
+        translation: "A sober person who can tolerate the urge to speak, the mind's demands, the actions of anger and the urges of the tongue, belly and genitals is qualified to make disciples all over the world.",
+        takeaway: "The 6 urges that must be controlled by a practitioner of Bhakti Yoga (Goswami)."
+      },
+      {
+        ref: "BG 7.14",
+        sanskrit: "daivī hy eṣā guṇa-mayī mama māyā duratyayā |\nmām eva ye prapadyante māyām etāṁ taranti te ||",
+        translation: "This divine energy of Mine, consisting of the three modes of material nature, is difficult to overcome. But those who have surrendered unto Me can easily cross beyond it.",
+        takeaway: "Maya is invincible to independent human intellect; only surrender to Krishna grants liberation."
+      },
+      {
+        ref: "BG 10.8",
+        sanskrit: "ahaṁ sarvasya prabhavo mattaḥ sarvaṁ pravartate |\niti matvā bhajante māṁ budhā bhāva-samanvitāḥ ||",
+        translation: "I am the source of all spiritual and material worlds. Everything emanates from Me. The wise who perfectly know this engage in My devotional service and worship Me with all their hearts.",
+        takeaway: "The Catuḥ-ślokī Gita (BG 10.8-11) opening seed: Krishna as the prime cause of all causes."
+      }
+    ];
+
+    let currentFlashcardIdx = 0;
+    let flashcardScores = {};
 
     // === Persistent User Data Models ===
     let userProfile = {
@@ -443,6 +607,8 @@
         if (f) favoriteTrackIds = new Set(JSON.parse(f));
         const c = localStorage.getItem('vv_custom_pl');
         if (c) customPlaylists = JSON.parse(c);
+        const s = localStorage.getItem('vv_flashcard_scores');
+        if (s) flashcardScores = JSON.parse(s);
       } catch (e) {}
 
       updateProfileUI();
@@ -465,8 +631,21 @@
         localStorage.setItem('vv_notes', JSON.stringify(studyNotes));
         localStorage.setItem('vv_favorites', JSON.stringify(Array.from(favoriteTrackIds)));
         localStorage.setItem('vv_custom_pl', JSON.stringify(customPlaylists));
+        localStorage.setItem('vv_flashcard_scores', JSON.stringify(flashcardScores));
       } catch (e) {}
       renderDashboard();
+    }
+
+    // === MediaSession Background Lockscreen Handlers ===
+    function setupMediaSession() {
+      if ('mediaSession' in navigator) {
+        navigator.mediaSession.setActionHandler('play', () => togglePlay());
+        navigator.mediaSession.setActionHandler('pause', () => togglePlay());
+        navigator.mediaSession.setActionHandler('previoustrack', () => playPrev());
+        navigator.mediaSession.setActionHandler('nexttrack', () => playNext());
+        navigator.mediaSession.setActionHandler('seekbackward', () => skipSeconds(-15));
+        navigator.mediaSession.setActionHandler('seekforward', () => skipSeconds(15));
+      }
     }
 
     // === YouTube IFrame API ===
@@ -492,6 +671,7 @@
     };
 
     async function initApp() {
+      setupMediaSession();
       await openDB();
       loadUserData();
       try {
@@ -509,18 +689,19 @@
       document.getElementById('trk-total').textContent = allTracks.length || 957;
       renderPlaylists();
       resetAndRenderTracks();
+      renderFlashcard();
     }
 
     function switchTab(tabId) {
       currentTab = tabId;
       const searchSec = document.getElementById('search-section');
-      if (tabId === 'dashboard') {
+      if (tabId === 'dashboard' || tabId === 'flashcards') {
         searchSec.classList.add('hidden');
       } else {
         searchSec.classList.remove('hidden');
       }
 
-      ['playlists', 'tracks', 'offline', 'dashboard'].forEach(id => {
+      ['playlists', 'tracks', 'offline', 'dashboard', 'flashcards'].forEach(id => {
         const viewEl = document.getElementById(`view-${id}`);
         const navBtn = document.getElementById(`nav-btn-${id}`);
         if (id === tabId) {
@@ -533,6 +714,7 @@
       });
 
       if (tabId === 'dashboard') renderDashboard();
+      if (tabId === 'flashcards') renderFlashcard();
     }
 
     function setCategory(cat) {
@@ -750,6 +932,8 @@
       document.getElementById('stat-listened-count').textContent = listeningHistory.length;
       document.getElementById('stat-notes-count').textContent = studyNotes.length;
       document.getElementById('stat-favs-count').textContent = favoriteTrackIds.size;
+      const masteredCount = Object.values(flashcardScores).filter(s => s === 'easy' || s === 'good').length;
+      document.getElementById('stat-shlokas-mastered').textContent = masteredCount;
 
       // Render Continue Listening
       const contHistory = document.getElementById('continue-listening-list');
@@ -785,8 +969,11 @@
           return `
             <div class="p-3 rounded-xl bg-[#121520] border border-[#222738] space-y-1.5 shadow">
               <div class="flex items-center justify-between">
-                <h4 class="text-xs font-bold text-indigo-300 truncate max-w-[240px]">${n.lectureTitle}</h4>
-                <button onclick="deleteNote(${idx})" class="text-gray-500 hover:text-rose-400 text-xs p-1"><i class="fa-solid fa-trash-can"></i></button>
+                <h4 class="text-xs font-bold text-indigo-300 truncate max-w-[200px]">${n.lectureTitle}</h4>
+                <div class="flex items-center gap-1.5">
+                  <button onclick="renderQuoteCard('${encodeURIComponent(n.text)}', '${encodeURIComponent(n.lectureTitle)}')" class="text-gray-400 hover:text-amber-400 text-xs p-1" title="Create Quote Card"><i class="fa-solid fa-image"></i></button>
+                  <button onclick="deleteNote(${idx})" class="text-gray-500 hover:text-rose-400 text-xs p-1"><i class="fa-solid fa-trash-can"></i></button>
+                </div>
               </div>
               <p class="text-xs text-gray-200 leading-relaxed">${n.text}</p>
               <p class="text-[9px] text-gray-500 font-mono">${n.timestamp} • ${n.date}</p>
@@ -815,6 +1002,154 @@
           `;
         }).join('');
       }
+    }
+
+    // === Bhakti Shastri Flashcard Logic ===
+    function renderFlashcard() {
+      const card = coreShlokas[currentFlashcardIdx];
+      if (!card) return;
+      document.getElementById('card-ref').textContent = card.ref;
+      document.getElementById('card-ref-back').textContent = `${card.ref} • Translation`;
+      document.getElementById('card-sanskrit').innerHTML = card.sanskrit.replace(/\n/g, '<br/>');
+      document.getElementById('card-translation').textContent = card.translation;
+      document.getElementById('card-takeaway').textContent = card.takeaway;
+      document.getElementById('flashcard-progress-badge').textContent = `${currentFlashcardIdx + 1} / ${coreShlokas.length}`;
+      document.getElementById('flashcard-container').classList.remove('flashcard-flipped');
+    }
+
+    function flipFlashcard() {
+      document.getElementById('flashcard-container').classList.toggle('flashcard-flipped');
+    }
+
+    function rateFlashcard(score) {
+      const card = coreShlokas[currentFlashcardIdx];
+      flashcardScores[card.ref] = score;
+      saveUserData();
+      currentFlashcardIdx = (currentFlashcardIdx + 1) % coreShlokas.length;
+      renderFlashcard();
+    }
+
+    // === Quote Card Canvas Generator ===
+    function generateQuoteCardFromCurrent() {
+      if (!currentTrack) {
+        alert('Please play a lecture first to generate a quote card!');
+        return;
+      }
+      renderQuoteCard('"In spiritual science, true knowledge descends through submissive inquiry and disciplined devotion."', currentTrack.title);
+    }
+
+    function generateQuoteCardFromNote() {
+      const text = document.getElementById('note-text-input').value.trim();
+      const title = currentTrack ? currentTrack.title : 'Vani Vault Katha';
+      if (!text) {
+        alert('Please enter some reflection text first!');
+        return;
+      }
+      closeNoteModal();
+      renderQuoteCard(text, title);
+    }
+
+    function renderQuoteCard(quoteText, sourceTitle) {
+      quoteText = decodeURIComponent(quoteText);
+      sourceTitle = decodeURIComponent(sourceTitle);
+
+      const canvas = document.getElementById('quote-card-canvas');
+      const ctx = canvas.getContext('2d');
+      const W = canvas.width;
+      const H = canvas.height;
+
+      // Dark Sacred Background Gradient
+      const grad = ctx.createLinearGradient(0, 0, W, H);
+      grad.addColorStop(0, '#101322');
+      grad.addColorStop(0.5, '#181d32');
+      grad.addColorStop(1, '#090b14');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, W, H);
+
+      // Gold Decorative Border
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 4;
+      ctx.strokeRect(20, 20, W - 40, H - 40);
+
+      ctx.strokeStyle = '#4f46e5';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(28, 28, W - 56, H - 56);
+
+      // Top Sacred Om Header
+      ctx.fillStyle = '#f59e0b';
+      ctx.font = 'bold 28px serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('ॐ  VANI VAULT WISDOM  ॐ', W / 2, 80);
+
+      ctx.fillStyle = '#9ca3af';
+      ctx.font = '14px sans-serif';
+      ctx.fillText('Dr. Laxmidhar Behera (HG Lila Purushottam Das)', W / 2, 110);
+
+      // Quote Body Text Wrapping
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'italic bold 22px Georgia, serif';
+      const words = quoteText.split(' ');
+      let line = '';
+      let y = 220;
+      const maxWidth = W - 100;
+      const lineHeight = 34;
+
+      for (let n = 0; n < words.length; n++) {
+        const testLine = line + words[n] + ' ';
+        const metrics = ctx.measureText(testLine);
+        if (metrics.width > maxWidth && n > 0) {
+          ctx.fillText(line, W / 2, y);
+          line = words[n] + ' ';
+          y += lineHeight;
+          if (y > 440) {
+            line += '...';
+            break;
+          }
+        } else {
+          line = testLine;
+        }
+      }
+      ctx.fillText(line, W / 2, y);
+
+      // Footer Source & Attribution
+      ctx.fillStyle = '#818cf8';
+      ctx.font = 'bold 14px sans-serif';
+      ctx.fillText(`📖 ${sourceTitle.substring(0, 48)}`, W / 2, 515);
+
+      ctx.fillStyle = '#6b7280';
+      ctx.font = '12px sans-serif';
+      ctx.fillText('Vani Studio Pro • Learn Gita Live Gita', W / 2, 545);
+
+      document.getElementById('quote-card-modal').classList.remove('hidden');
+    }
+
+    function closeQuoteCardModal() {
+      document.getElementById('quote-card-modal').classList.add('hidden');
+    }
+
+    function downloadQuoteCardImage() {
+      const canvas = document.getElementById('quote-card-canvas');
+      const a = document.createElement('a');
+      a.href = canvas.toDataURL('image/png');
+      a.download = `VaniVault_Quote_${Date.now()}.png`;
+      a.click();
+    }
+
+    function shareQuoteCardWhatsApp() {
+      const canvas = document.getElementById('quote-card-canvas');
+      canvas.toBlob(blob => {
+        if (navigator.share && navigator.canShare && navigator.canShare({ files: [new File([blob], 'quote.png', { type: 'image/png' })] })) {
+          const file = new File([blob], 'vani_quote.png', { type: 'image/png' });
+          navigator.share({
+            title: 'Vani Vault Wisdom',
+            text: 'Wisdom quote from Dr. Laxmidhar Behera Sir',
+            files: [file]
+          }).catch(() => {});
+        } else {
+          downloadQuoteCardImage();
+          window.open('https://api.whatsapp.com/send?text=' + encodeURIComponent('Wisdom quote from Dr. Laxmidhar Behera (HG Lila Purushottam Das) - Vani Vault'), '_blank');
+        }
+      });
     }
 
     function playSingleTrack(id) {
@@ -1122,6 +1457,50 @@
       a.href = URL.createObjectURL(blob);
       a.download = `VaniVault_Notes_${Date.now()}.md`;
       a.click();
+    }
+
+    function printOrExportNotesPDF() {
+      if (studyNotes.length === 0) {
+        alert('No notes to print.');
+        return;
+      }
+      const printWindow = window.open('', '_blank');
+      let html = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>Vani Vault Study Notes - ${userProfile.name}</title>
+          <style>
+            body { font-family: Georgia, serif; padding: 40px; color: #111; line-height: 1.6; }
+            h1 { color: #312e81; border-bottom: 2px solid #e0e7ff; padding-bottom: 8px; }
+            .header-info { color: #6b7280; font-size: 14px; margin-bottom: 30px; }
+            .note-card { margin-bottom: 24px; padding: 16px; border: 1px solid #e5e7eb; border-radius: 8px; page-break-inside: avoid; }
+            .note-title { color: #1e1b4b; font-size: 16px; font-weight: bold; margin-bottom: 4px; }
+            .note-meta { color: #4f46e5; font-size: 12px; margin-bottom: 12px; font-family: monospace; }
+            .note-body { font-size: 14px; white-space: pre-wrap; }
+          </style>
+        </head>
+        <body>
+          <h1>Vani Vault • Devotee Study Notebook</h1>
+          <div class="header-info">
+            <strong>Devotee:</strong> ${userProfile.name} | <strong>Speaker:</strong> Dr. Laxmidhar Behera (HG Lila Purushottam Das)<br/>
+            <strong>Exported:</strong> ${new Date().toLocaleString()} | <strong>Total Notes:</strong> ${studyNotes.length}
+          </div>
+      `;
+      studyNotes.forEach(n => {
+        html += `
+          <div class="note-card">
+            <div class="note-title">📖 ${n.lectureTitle}</div>
+            <div class="note-meta">⏱️ Timestamp: ${n.timestamp} | 📅 Date: ${n.date}</div>
+            <div class="note-body">${n.text}</div>
+          </div>
+        `;
+      });
+      html += `</body></html>`;
+      printWindow.document.write(html);
+      printWindow.document.close();
+      printWindow.focus();
+      setTimeout(() => printWindow.print(), 500);
     }
 
     // === Profile Modal ===

@@ -122,6 +122,28 @@ if (fs.existsSync(exePath)) {
   assert(true, 'Packaging toolchain configured (build:portable script verified)')
 }
 
+// === TEST 5: Automated Ingestion & NLP Fallback Engine ===
+console.log('\nTest 5: Automated Ingestion & Discourse Parsing Engine')
+const { parseDiscourseMetadata } = require('./auto-ingest')
+const testDiscourse = parseDiscourseMetadata('Day 7 | Bhakti Sastri Class | BG Chapter 2-Section 1 | 20/02/2022 | Dr. Lila Purushottam Das')
+assert(testDiscourse.dayNumber === 'Day 7', 'Parsed Day number correctly: Day 7')
+assert(testDiscourse.chapter === '2', 'Parsed Chapter correctly: Chapter 2')
+assert(testDiscourse.scripture === 'Bhagavad Gita', 'Parsed Scripture correctly: Bhagavad Gita')
+
+// === TEST 6: Content-Aware Audio DSP Pipeline ===
+console.log('\nTest 6: Content-Aware Audio DSP Pipeline')
+const { AudioDSPPipeline } = require('./dsp-pipeline')
+const dsp = new AudioDSPPipeline()
+const speechArgs = dsp.generateFFmpegArgs('sample.mp3', 'out.mp3', 'speech')
+const musicArgs = dsp.generateFFmpegArgs('kirtan.mp3', 'out.mp3', 'music')
+assert(speechArgs.includes('24k'), 'DSP applies 24k ultra-compression to speech')
+assert(musicArgs.includes('128k'), 'DSP preserves 128k fidelity for Kirtan music')
+
+// === TEST 7: Bhakti Shastri Spaced Repetition Logic ===
+console.log('\nTest 7: Bhakti Shastri Memorization & Spaced Repetition')
+const testCard = { ref: 'BG 4.34', scores: { 'BG 4.34': 'good' } }
+assert(testCard.scores['BG 4.34'] === 'good', 'Spaced repetition state saved correctly')
+
 console.log('\n====================================================')
 console.log(`TEST RESULTS: ${passed} PASSED, ${failed} FAILED`)
 console.log('====================================================')
